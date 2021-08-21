@@ -243,14 +243,14 @@ int main(void)
             gl_renderer2d_draw_quad(&renderer, quads[1]);
             gl_renderer2d_draw_quad(&renderer, quads[0]);
 
-            gl_batch_t batch = {
-                .shape_type= BT_QUAD, 
-                .shape_count= 3,
-                .vertex_buffer= (gl_vertex_t *)quads,
-                .vertex_buffer_size= sizeof(quads)
-            };
+            /*gl_batch_t batch = {*/
+                /*.shape_type= BT_QUAD, */
+                /*.shape_count= 3,*/
+                /*.vertex_buffer= (gl_vertex_t *)quads,*/
+                /*.vertex_buffer_size= sizeof(quads)*/
+            /*};*/
 
-            gl_renderer2d_draw_from_batch(&renderer, &batch); 
+            /*gl_renderer2d_draw_from_batch(&renderer, &batch); */
 
         }
         window_gl_render_end(&window);
