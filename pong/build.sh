@@ -5,6 +5,10 @@ green=$(tput bold; tput setaf 2)
 blue=$(tput bold; tput setaf 4)
 reset=$(tput sgr0)
 
+function include_poglib {
+    git clone https://github.com/gimploo/poglib
+    mv poglib/ lib/
+}
 
 function setup_envirnoment {
     rm -rf core
@@ -62,6 +66,7 @@ function main {
     local SRC_PATH="src/main.c"
     local EXE_PATH="bin/pong"
     local BIN_DIR="bin/"
+    local LIB_DIR="lib/"
 
 
     # Cleaning bin directory
@@ -79,6 +84,10 @@ function main {
     echo -e "[!] ${green}Setting up environment${reset}"
     setup_envirnoment
 
+    if [ ! -d "$LIB_DIR" ]
+    then
+        include_poglib
+    fi
 
     # Checking if bin directory is made
     if [ ! -d "$BIN_DIR" ] 
