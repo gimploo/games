@@ -218,7 +218,7 @@ int main(void)
 
         window_gl_render_begin(&window);
         {
-            gl_quad_t quads[3] = {
+            gl_quad_t quads[4] = {
 
                 // positions                                                        // colors          // texture_coord
                 ball.ball_quad.vertex[0].cmp[X], ball.ball_quad.vertex[0].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
@@ -239,18 +239,18 @@ int main(void)
 
             };
 
-            gl_renderer2d_draw_quad(&renderer, quads[2]);
-            gl_renderer2d_draw_quad(&renderer, quads[1]);
-            gl_renderer2d_draw_quad(&renderer, quads[0]);
+            /*gl_renderer2d_draw_quad(&renderer, quads[2]);*/
+            /*gl_renderer2d_draw_quad(&renderer, quads[1]);*/
+            /*gl_renderer2d_draw_quad(&renderer, quads[0]);*/
 
-            /*gl_batch_t batch = {*/
-                /*.shape_type= BT_QUAD, */
-                /*.shape_count= 3,*/
-                /*.vertex_buffer= (gl_vertex_t *)quads,*/
-                /*.vertex_buffer_size= sizeof(quads)*/
-            /*};*/
+            gl_batch_t batch = {
+                .shape_type= BT_QUAD, 
+                .shape_count= 3,
+                .vertex_buffer= quads,
+                .vertex_buffer_size= sizeof(quads)
+            };
 
-            /*gl_renderer2d_draw_from_batch(&renderer, &batch); */
+            gl_renderer2d_draw_from_batch(&renderer, &batch); 
 
         }
         window_gl_render_end(&window);

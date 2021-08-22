@@ -6,8 +6,13 @@ blue=$(tput bold; tput setaf 4)
 reset=$(tput sgr0)
 
 function include_poglib {
-    git clone https://github.com/gimploo/poglib
-    mv poglib/ lib/
+    if [ "$(whoami)" != "simploo" ]
+    then
+        git clone https://github.com/gimploo/poglib
+        mv poglib/ lib/
+    else
+        ln -s ~/Documents/projects/poglib/ lib
+    fi
 }
 
 function setup_envirnoment {
