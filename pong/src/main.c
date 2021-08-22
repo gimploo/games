@@ -17,6 +17,8 @@ typedef struct player_t {
 
     f32 width;
     f32 height;
+     
+    int points;
 
 } player_t;
 
@@ -68,7 +70,6 @@ int main(void)
     const vec2f_t player_acceleration = {0.0f, 0.01f};
     const f32 player_hit_multiplier = 0.0003;
 
-
     const vec2f_t ball_acceleration = {-0.008f, 0.001f};
     const f32 ball_dx_multiplier = 0.0003;  
     const f32 ball_dy_multiplier = 0.00009;
@@ -79,6 +80,7 @@ int main(void)
         .acceleration = player_acceleration,
         .width = padle_width,
         .height = padle_height,
+        .points = 0,
     };
 
     player_t player02 = {
@@ -86,6 +88,7 @@ int main(void)
         .acceleration = player_acceleration,
         .width = padle_width,
         .height = padle_height,
+        .points = 0,
     };
 
     ball_t ball = {
@@ -108,9 +111,17 @@ int main(void)
         net_quad        = quadf_init((vec2f_t ){0.0f, 1.0f}, 0.001f, 2.0f);
 
 
-        if (ball.position.cmp[X] >= 1.0f 
-            || ball.position.cmp[X] <= -1.0f )
-        {
+        if (ball.position.cmp[X] >= 1.0f) {
+
+            player01.points++;
+            ball.position.cmp[X] = 0.0f;
+            ball.position.cmp[Y] = 0.0f;
+            ball.acceleration.cmp[X] = -0.008f;
+            ball.acceleration.cmp[Y] = 0.001f;
+
+        } else if ( ball.position.cmp[X] <= -1.0f ) {
+
+            player02.points++;
             ball.position.cmp[X] = 0.0f;
             ball.position.cmp[Y] = 0.0f;
             ball.acceleration.cmp[X] = -0.008f;
@@ -235,6 +246,7 @@ int main(void)
                 .vertex_buffer= (gl_vertex_t *)quads,
                 .vertex_buffer_size= sizeof(quads)
             };
+
 
             gl_ascii_font_render_text(&font, "0", (vec2f_t) {-0.6f, 1.0f}, 0.1f);
             gl_ascii_font_render_text(&font, "0", (vec2f_t) {0.5f, 1.0f}, 0.1f);
