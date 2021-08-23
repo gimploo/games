@@ -74,7 +74,7 @@ void    game_state_exit(game_pong_t *pong);
 int main(void)
 {
     window_t window = window_init("pong", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_INIT_VIDEO);
-    window_set_background(&window, (vec4f_t) {0.0f, 0.0f, 0.0f, 0.0f});
+    window_set_background(&window, (vec4f_t){0.0f, 0.0f, 0.0f, 0.0f});
 
     gl_shader_t shader          = gl_shader_from_file_init("res/pong.vs", "res/pong.fs");
     gl_renderer2d_t renderer    = gl_renderer2d_init(&shader, NULL); 
@@ -175,6 +175,7 @@ int main(void)
             case EXIT:
                 game_state_exit(&pong);
             break;
+
             default:
                 eprint("Game state type not accounted for ");
         }
@@ -415,12 +416,15 @@ void game_state_player_won(game_pong_t *pong)
             window_gl_render_end(pong->window);
         break;
     }
+    SDL_Delay(1);
 
     pong->player01.points = pong->player02.points = 0;
 
     if (pong->window->keyboard_handler.is_active) 
         if (pong->window->keyboard_handler.key == SDLK_RETURN)
+        {
             game_set_current_state(pong, MENU);
+        }
 }
 
 void game_state_exit(game_pong_t *pong)
