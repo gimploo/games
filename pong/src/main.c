@@ -1,13 +1,35 @@
 #include "../lib/basic.h"
 #include "../lib/math/shapes.h"
-#define GL_LOG_ENABLE
 #include "../lib/simple/gl_renderer.h"
 #include "../lib/simple/window.h"
 #include "../lib/simple/font/gl_ascii_font.h"
+#include "../lib/game/2D/collision.h"
 
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 920
+
+
+typedef enum game_state_type {
+
+    GST_MENU,
+    GST_PAUSE,
+    GST_PLAYING,
+    GST_PLAYER01_WON,
+    GST_PLAYER02_WON,
+    GST_EXIT,
+
+    GST_COUNT
+
+} game_state_type;
+
+typedef struct game {
+
+    game_state_type state;
+
+} game ;
+
+
 
 typedef struct player_t {
 
@@ -33,46 +55,25 @@ typedef struct ball_t {
 
 } ball_t;
 
-vec2f_t rand_vec2f(void)
-{
-    vec2f_t ball;
-    ball.cmp[X] = (float )randint(-1, 1);
-    ball.cmp[Y] = (float )randint(-1, 1);
-    return ball;
-}
-
-bool collision_quad_check_by_AABB(quadf_t left, quadf_t right)
-{
-    // AABB - AABB collision
-    //
-    bool x_axis_collision = 
-        (left.vertex[1].cmp[X] >= right.vertex[0].cmp[X]) 
-        && (right.vertex[1].cmp[X] >= left.vertex[0].cmp[X]);
-
-    bool y_axis_collision = 
-        (left.vertex[0].cmp[Y] >= right.vertex[3].cmp[Y]) 
-        && (right.vertex[0].cmp[Y] >= left.vertex[3].cmp[Y]);
-
-    return x_axis_collision && y_axis_collision;
-}
-
+//FIXME: Collision doesnt work when the ball is moving super fast, the ball phases throught it.
 
 int main(void)
 {
-    window_t window = window_init(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_INIT_VIDEO);
+    window_t window = window_init("pong", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_INIT_VIDEO);
     window_set_background(&window, (vec4f_t) {0.0f, 0.0f, 0.0f, 0.0f});
 
-    gl_shader_t shader = gl_shader_from_file_init("res/pong.vs", "res/pong.fs");
-    gl_renderer2d_t renderer = gl_renderer2d_init(&shader, NULL);
+    gl_shader_t shader          = gl_shader_from_file_init("res/pong.vs", "res/pong.fs");
+    gl_renderer2d_t renderer    = gl_renderer2d_init(&shader, NULL); 
 
-    const f32 padle_width = 0.03f;
-    const f32 padle_height = 0.3f;
-    const vec2f_t player_acceleration = {0.0f, 0.01f};
-    const f32 player_hit_multiplier = 0.0003;
 
-    const vec2f_t ball_acceleration = {-0.008f, 0.001f};
-    const f32 ball_dx_multiplier = 0.0003;  
-    const f32 ball_dy_multiplier = 0.00009;
+    const f32 padle_width               = 0.03f;
+    const f32 padle_height              = 0.3f;
+    const vec2f_t player_acceleration   = {0.0f, 0.03f};
+    const vec2f_t ball_acceleration     = {0.008f, 0.001f};
+    const f32 ball_dx_multiplier        = 0.004;  
+    const f32 ball_dy_multiplier        = 0.00009;
+    const quadf_t net_quad              = quadf_init((vec2f_t ){0.0f, 1.0f}, 0.001f, 2.0f);
+    const gl_ascii_font_t font          = gl_ascii_font_init("res/charmap-futuristic_black.png",18, 7); 
 
 
     player_t player01 = {
@@ -98,36 +99,37 @@ int main(void)
         .acceleration = ball_acceleration,
     };
 
-    quadf_t net_quad;
 
-    gl_ascii_font_t font = gl_ascii_font_init("res/charmap-futuristic_black.png",18, 7); 
 
-    while (window.is_open)
+    f64 dt;
+    f64 fps;
+
+    window_game_loop(&window)
     {
+        dt = window_get_dt(&window);
+        fps = window_get_fps(&window);
+
+
         ball.position   = vec2f_translate(ball.position, ball.acceleration);
         player01.padle  = quadf_init(player01.position, player01.width, player01.height);
         player02.padle  = quadf_init(player02.position, player02.width, player02.height);
         ball.ball_quad  = quadf_init(ball.position, ball.width, ball.height); 
-        net_quad        = quadf_init((vec2f_t ){0.0f, 1.0f}, 0.001f, 2.0f);
 
 
         if (ball.position.cmp[X] >= 1.0f) {
 
             player01.points++;
-            ball.position.cmp[X] = 0.0f;
-            ball.position.cmp[Y] = 0.0f;
-            ball.acceleration.cmp[X] = -0.008f;
-            ball.acceleration.cmp[Y] = 0.001f;
+            ball.position = vec2f(0.0f);
+            ball.acceleration = ball_acceleration;
 
-        } else if ( ball.position.cmp[X] <= -1.0f ) {
+        } else if ( ball.position.cmp[X] <= -1.0f) {
 
             player02.points++;
-            ball.position.cmp[X] = 0.0f;
-            ball.position.cmp[Y] = 0.0f;
-            ball.acceleration.cmp[X] = -0.008f;
-            ball.acceleration.cmp[Y] = 0.001f;
+            ball.position = vec2f(0.0f);
+            ball.acceleration = ball_acceleration;
 
         }
+
         if (ball.position.cmp[Y] >= 1.0f 
             || ball.position.cmp[Y] <= -1.0f)
         {
@@ -178,27 +180,11 @@ int main(void)
 
             if (key ==  SDLK_q) window.is_open = false;
 
-        } else {
-
-            switch(window.keyboard_handler.key) {
-                case SDLK_w:
-                    break;
-                case SDLK_s:
-                    break;
-                case SDLK_UP:
-                    break;
-                case SDLK_DOWN:
-                    break;
-                case SDLK_q:
-                    window.is_open = false;
-                    break;
-            }
         }
 
         if (collision_quad_check_by_AABB(player01.padle, ball.ball_quad))
         {
             ball.acceleration.cmp[X] += ball_dx_multiplier;
-            ball.acceleration.cmp[X] *= -1;
 
             ball.acceleration.cmp[Y] += ball_dy_multiplier;
         }
@@ -247,16 +233,26 @@ int main(void)
                 .vertex_buffer_size= sizeof(quads)
             };
 
+            char string_buffer[32] = {0};
 
-            gl_ascii_font_render_text(&font, "0", (vec2f_t) {-0.6f, 1.0f}, 0.1f);
-            gl_ascii_font_render_text(&font, "0", (vec2f_t) {0.5f, 1.0f}, 0.1f);
+            snprintf(string_buffer, 32, "%i", player01.points);
+            gl_ascii_font_render_text(&font, string_buffer, (vec2f_t) {-0.6f, 1.0f}, 0.1f);
+
+            snprintf(string_buffer, 32, "%i", player02.points);
+            gl_ascii_font_render_text(&font, string_buffer, (vec2f_t) {0.5f, 1.0f}, 0.1f);
+
+            snprintf(string_buffer, 32, "FPS:%i", (int )fps);
+            gl_ascii_font_render_text(&font, string_buffer, (vec2f_t) {0.76f, 1.0f}, 0.03f);
+
             gl_renderer2d_draw_from_batch(&renderer, &batch); 
+
 
         }
         window_gl_render_end(&window);
 
-        // TODO: add delta time for consistent frame rate 
-        SDL_Delay(1/60000);
+        /*window_cap_fps(&window);*/
+        /*SDL_Delay(1);*/
+
     }
 
     gl_ascii_font_destroy(&font);
