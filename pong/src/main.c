@@ -180,9 +180,9 @@ int main(void)
                 eprint("Game state type not accounted for ");
         }
 
+        SDL_Delay(10);
 
         /*window_cap_fps(&window);*/
-        SDL_Delay(1);
 
     }
 
@@ -410,7 +410,7 @@ void game_state_player_won(game_pong_t *pong)
 
     pong->player01.points = pong->player02.points = 0;
 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, MENU);
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, MENU);
 }
 
 void game_state_exit(game_pong_t *pong)
@@ -452,8 +452,8 @@ void game_state_pause(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, PLAYING); 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, EXIT); 
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_1)) game_set_current_state(pong, PLAYING); 
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_2)) game_set_current_state(pong, EXIT); 
     
 }
 
