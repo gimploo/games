@@ -12,7 +12,7 @@ typedef struct player_t {
 
     quadf_t padle;
     vec2f_t position;
-    vec2f_t acceleration;
+    vec2f_t speed;
 
     f32 width;
     f32 height;
@@ -25,7 +25,7 @@ typedef struct ball_t {
 
     quadf_t ball_quad;
     vec2f_t position;
-    vec2f_t acceleration;
+    vec2f_t speed;
 
     f32 width;
     f32 height;
@@ -81,8 +81,8 @@ int main(void)
 
     const f32 padle_width               = 0.03f;
     const f32 padle_height              = 0.3f;
-    const vec2f_t player_acceleration   = {0.0f, 0.03f};
-    const vec2f_t ball_acceleration     = {0.008f, 0.001f};
+    const vec2f_t player_speed   = {0.0f, 0.03f};
+    const vec2f_t ball_speed     = {0.008f, 0.001f};
     const gl_ascii_font_t font          = gl_ascii_font_init("res/charmap-futuristic_black.png",18, 7); 
 
 
@@ -93,7 +93,7 @@ int main(void)
 
         .player01 = {
             .position = (vec2f_t) {-0.9f, 0.0f},
-            .acceleration = player_acceleration,
+            .speed = player_speed,
             .width = padle_width,
             .height = padle_height,
             .points = 0,
@@ -101,7 +101,7 @@ int main(void)
 
         .player02 = {
             .position   = (vec2f_t) {0.8f, 0.0f},
-            .acceleration = player_acceleration,
+            .speed = player_speed,
             .width = padle_width,
             .height = padle_height,
             .points = 0,
@@ -111,7 +111,7 @@ int main(void)
             .width = 0.03f,
             .height = 0.03f,
             .position =  (vec2f_t) {-0.03f, 0.03f},
-            .acceleration = ball_acceleration,
+            .speed = ball_speed,
         },
 
         .window = &window,
@@ -125,7 +125,7 @@ int main(void)
 
     window_game_loop(&window)
     {
-        dt = window_get_dt(&window);
+        dt = window_get_dt(&window); // not used
 
         switch(pong.current_state)
         {
@@ -138,10 +138,10 @@ int main(void)
             break;
 
             case PLAYER01_SCORED:
-                pong.ball.position      = vec2f(0.0f);
-                pong.ball.acceleration  = ball_acceleration;
+                pong.ball.position  = vec2f(0.0f);
+                pong.ball.speed     = ball_speed;
                 pong.player01.points++;
-                if (pong.player01.points == 5) {
+                if (pong.player01.points == 3) {
                     game_set_current_state(&pong, PLAYER01_WON);
                 } else {
                     game_state_playing(&pong);
@@ -150,10 +150,10 @@ int main(void)
 
             case PLAYER02_SCORED:
                 pong.ball.position      = vec2f(0.0f);
-                pong.ball.acceleration  = ball_acceleration;
-                pong.ball.acceleration.cmp[X] *= -1;
+                pong.ball.speed         = ball_speed;
+                pong.ball.speed.cmp[X] *= -1;
                 pong.player02.points++;
-                if (pong.player02.points == 5) {
+                if (pong.player02.points == 3) {
                     game_set_current_state(&pong, PLAYER02_WON);
                 } else {
                     game_state_playing(&pong);
@@ -211,7 +211,7 @@ void game_state_playing(game_pong_t *pong)
         window_game_loop(window)
         {   
             fps = window_get_fps(window);
-            ball.position   = vec2f_translate(ball.position, ball.acceleration);
+            ball.position   = vec2f_translate(ball.position, ball.speed);
             player01.padle  = quadf_init(player01.position, player01.width, player01.height);
             player02.padle  = quadf_init(player02.position, player02.width, player02.height);
             ball.ball_quad  = quadf_init(ball.position, ball.width, ball.height); 
@@ -234,7 +234,7 @@ void game_state_playing(game_pong_t *pong)
             if (ball.position.cmp[Y] >= 1.0f 
                 || ball.position.cmp[Y] <= -1.0f)
             {
-                ball.acceleration.cmp[Y] *= -1;
+                ball.speed.cmp[Y] *= -1;
             }
 
             if(window->keyboard_handler.is_active) {
@@ -245,7 +245,7 @@ void game_state_playing(game_pong_t *pong)
 
                     player01.position = vec2f_translate(
                             player01.position, 
-                            player01.acceleration);
+                            player01.speed);
 
                     if(player01.position.cmp[Y] >= 1.0f) 
                         player01.position.cmp[Y] = 1.0f;
@@ -254,7 +254,7 @@ void game_state_playing(game_pong_t *pong)
 
                     player01.position = vec2f_translate(
                             player01.position, 
-                            vec2f_scale(player01.acceleration, -1));
+                            vec2f_scale(player01.speed, -1));
 
                     if(player01.position.cmp[Y] <= -1.0f - (-0.3f)) 
                         player01.position.cmp[Y] = -1.0f - (-0.3f);
@@ -264,7 +264,7 @@ void game_state_playing(game_pong_t *pong)
 
                     player02.position = vec2f_translate(
                             player02.position, 
-                            player02.acceleration);
+                            player02.speed);
 
                     if(player02.position.cmp[Y] >= 1.0f) 
                         player02.position.cmp[Y] = 1.0f;
@@ -273,7 +273,7 @@ void game_state_playing(game_pong_t *pong)
 
                     player02.position = vec2f_translate(
                             player02.position, 
-                            vec2f_scale(player02.acceleration, -1));
+                            vec2f_scale(player02.speed, -1));
 
                     if(player02.position.cmp[Y] <= -1.0f - (-0.3f)) 
                         player02.position.cmp[Y] = -1.0f - (-0.3f);
@@ -288,17 +288,18 @@ void game_state_playing(game_pong_t *pong)
 
             if (collision_quad_check_by_AABB(player01.padle, ball.ball_quad))
             {
-                ball.acceleration.cmp[X] += ball_dx_multiplier;
+                ball.speed.cmp[X] -= ball_dx_multiplier;
+                ball.speed.cmp[X] *= -1;
 
-                ball.acceleration.cmp[Y] += ball_dy_multiplier;
+                ball.speed.cmp[Y] += ball_dy_multiplier;
             }
 
             if (collision_quad_check_by_AABB(ball.ball_quad, player02.padle))
             {
-                ball.acceleration.cmp[X] += ball_dx_multiplier;
-                ball.acceleration.cmp[X] *= -1;
+                ball.speed.cmp[X] += ball_dx_multiplier;
+                ball.speed.cmp[X] *= -1;
 
-                ball.acceleration.cmp[Y] += ball_dy_multiplier;
+                ball.speed.cmp[Y] += ball_dy_multiplier;
             }
 
 
@@ -373,18 +374,8 @@ void game_state_menu(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (pong->window->keyboard_handler.is_active)
-    {
-        switch(pong->window->keyboard_handler.key) 
-        {
-            case SDLK_ESCAPE:
-                game_set_current_state(pong, EXIT);
-            break;
-            case SDLK_RETURN:
-                game_set_current_state(pong, PLAYING);
-            break;
-        }
-    }
+    if (window_keyboard_is_key_pressed(pong->window,SDLK_ESCAPE))   game_set_current_state(pong, EXIT);
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN))  game_set_current_state(pong, PLAYING);
 
 }
 
@@ -416,15 +407,10 @@ void game_state_player_won(game_pong_t *pong)
             window_gl_render_end(pong->window);
         break;
     }
-    SDL_Delay(1);
 
     pong->player01.points = pong->player02.points = 0;
 
-    if (pong->window->keyboard_handler.is_active) 
-        if (pong->window->keyboard_handler.key == SDLK_RETURN)
-        {
-            game_set_current_state(pong, MENU);
-        }
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, MENU);
 }
 
 void game_state_exit(game_pong_t *pong)
@@ -440,9 +426,7 @@ void game_state_exit(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (pong->window->keyboard_handler.is_active) 
-        if (pong->window->keyboard_handler.key == SDLK_RETURN)
-            pong->window->is_open = false;
+    if(window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) pong->window->is_open = false;
 
 }
 
@@ -468,14 +452,8 @@ void game_state_pause(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (pong->window->keyboard_handler.is_active)
-    {
-        if (pong->window->keyboard_handler.key == SDLK_1) {
-            game_set_current_state(pong, PLAYING); 
-        } else if (pong->window->keyboard_handler.key == SDLK_2) {
-            game_set_current_state(pong, EXIT); 
-        }
-    }
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, PLAYING); 
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, EXIT); 
     
 }
 
