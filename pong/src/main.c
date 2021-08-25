@@ -69,8 +69,6 @@ void    game_state_player_won(game_pong_t *pong);
 void    game_state_exit(game_pong_t *pong);
 
 
-//FIXME: Collision doesnt work when the ball is moving super fast, the ball phases throught it.
-
 int main(void)
 {
     window_t window = window_init("pong", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_INIT_VIDEO);
@@ -180,8 +178,6 @@ int main(void)
                 eprint("Game state type not accounted for ");
         }
 
-        SDL_Delay(10);
-
         /*window_cap_fps(&window);*/
 
     }
@@ -204,7 +200,7 @@ void game_state_playing(game_pong_t *pong)
         const gl_ascii_font_t *font     = pong->font;
         const quadf_t net_quad          = quadf_init((vec2f_t ){0.0f, 1.0f}, 0.001f, 2.0f);
         const f32 ball_dx_multiplier    = 0.004;  
-        const f32 ball_dy_multiplier    = 0.00009;
+        const f32 ball_dy_multiplier    = 0.0001;
 
         f64 fps;
 
@@ -237,54 +233,49 @@ void game_state_playing(game_pong_t *pong)
                 ball.speed.cmp[Y] *= -1;
             }
 
-            if(window->keyboard_handler.is_active) {
+            if (window_keyboard_is_key_pressed(window, SDLK_w)) {
 
-                SDL_Keycode key = window->keyboard_handler.key;
+                player01.position = vec2f_translate(
+                        player01.position, 
+                        player01.speed);
 
-                if (key == SDLK_w) {
+                if(player01.position.cmp[Y] >= 1.0f) 
+                    player01.position.cmp[Y] = 1.0f;
 
-                    player01.position = vec2f_translate(
-                            player01.position, 
-                            player01.speed);
+            } else if (window_keyboard_is_key_pressed(window, SDLK_s)) {
 
-                    if(player01.position.cmp[Y] >= 1.0f) 
-                        player01.position.cmp[Y] = 1.0f;
+                player01.position = vec2f_translate(
+                        player01.position, 
+                        vec2f_scale(player01.speed, -1));
 
-                } else if (key == SDLK_s) {
-
-                    player01.position = vec2f_translate(
-                            player01.position, 
-                            vec2f_scale(player01.speed, -1));
-
-                    if(player01.position.cmp[Y] <= -1.0f - (-0.3f)) 
-                        player01.position.cmp[Y] = -1.0f - (-0.3f);
-                }
-
-                if (key == SDLK_UP) {
-
-                    player02.position = vec2f_translate(
-                            player02.position, 
-                            player02.speed);
-
-                    if(player02.position.cmp[Y] >= 1.0f) 
-                        player02.position.cmp[Y] = 1.0f;
-
-                } else if (key == SDLK_DOWN) {
-
-                    player02.position = vec2f_translate(
-                            player02.position, 
-                            vec2f_scale(player02.speed, -1));
-
-                    if(player02.position.cmp[Y] <= -1.0f - (-0.3f)) 
-                        player02.position.cmp[Y] = -1.0f - (-0.3f);
-                }
-
-                if (key == SDLK_ESCAPE) {
-                    game_set_current_state(pong, PAUSE);
-                    break;
-                }
-
+                if(player01.position.cmp[Y] <= -1.0f - (-0.3f)) 
+                    player01.position.cmp[Y] = -1.0f - (-0.3f);
             }
+
+            if (window_keyboard_is_key_pressed(window, SDLK_UP)) {
+
+                player02.position = vec2f_translate(
+                        player02.position, 
+                        player02.speed);
+
+                if(player02.position.cmp[Y] >= 1.0f) 
+                    player02.position.cmp[Y] = 1.0f;
+
+            } else if (window_keyboard_is_key_pressed(window, SDLK_DOWN)) {
+
+                player02.position = vec2f_translate(
+                        player02.position, 
+                        vec2f_scale(player02.speed, -1));
+
+                if(player02.position.cmp[Y] <= -1.0f - (-0.3f)) 
+                    player02.position.cmp[Y] = -1.0f - (-0.3f);
+            }
+
+            if (window_keyboard_is_key_pressed(window, SDLK_ESCAPE)) {
+                game_set_current_state(pong, PAUSE);
+                break;
+            }
+
 
             if (collision_quad_check_by_AABB(player01.padle, ball.ball_quad))
             {
@@ -368,14 +359,14 @@ void game_state_menu(game_pong_t *pong)
                 0.35f);
         gl_ascii_font_render_text(
                 pong->font,
-                "press enter to start",
+                "press space to start",
                 (vec2f_t ){-0.5f, -0.25f},
                 0.05f);
     }
     window_gl_render_end(pong->window);
 
-    if (window_keyboard_is_key_pressed(pong->window,SDLK_ESCAPE))   game_set_current_state(pong, EXIT);
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN))  game_set_current_state(pong, PLAYING);
+    if (window_keyboard_is_key_pressed(pong->window,SDLK_ESCAPE)) game_set_current_state(pong, EXIT);
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_SPACE))   game_set_current_state(pong, PLAYING);
 
 }
 
@@ -452,8 +443,8 @@ void game_state_pause(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_1)) game_set_current_state(pong, PLAYING); 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_2)) game_set_current_state(pong, EXIT); 
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, PLAYING); 
+    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, EXIT); 
     
 }
 
