@@ -124,7 +124,7 @@ int main(void)
     window_while_is_open(&window)
     {
         window_cap_fps(&window, 30);
-        dt = window_grab_dt(&window); // not used
+        dt = window_get_dt(&window); // not used
 
         switch(pong.current_state)
         {
@@ -207,7 +207,7 @@ void game_state_playing(game_pong_t *pong)
 
         window_while_is_open(window)
         {   
-            fps = window_grab_fps(window);
+            fps = window_get_fps(window);
             ball.position   = vec2f_translate(ball.position, ball.speed);
             player01.padle  = quadf_init(player01.position, player01.width, player01.height);
             player02.padle  = quadf_init(player02.position, player02.width, player02.height);
