@@ -1,6 +1,6 @@
 #include "../lib/basic.h"
 #include "../lib/math/shapes.h"
-#include "../lib/simple/gl_renderer.h"
+#include "../lib/simple/gl_renderer2d.h"
 #include "../lib/simple/window.h"
 #include "../lib/simple/font/gl_ascii_font.h"
 #include "../lib/game/2D/collision.h"
@@ -121,9 +121,10 @@ int main(void)
 
     f64 dt;
 
-    window_game_loop(&window)
+    window_while_is_open(&window)
     {
-        dt = window_get_dt(&window); // not used
+        window_cap_fps(&window, 30);
+        dt = window_grab_dt(&window); // not used
 
         switch(pong.current_state)
         {
@@ -183,7 +184,7 @@ int main(void)
     }
 
     gl_ascii_font_destroy(&font);
-    gl_render2d_destroy(&renderer);
+    gl_renderer2d_destroy(&renderer);
     window_destroy(&window);
     
 
@@ -204,9 +205,9 @@ void game_state_playing(game_pong_t *pong)
 
         f64 fps;
 
-        window_game_loop(window)
+        window_while_is_open(window)
         {   
-            fps = window_get_fps(window);
+            fps = window_grab_fps(window);
             ball.position   = vec2f_translate(ball.position, ball.speed);
             player01.padle  = quadf_init(player01.position, player01.width, player01.height);
             player02.padle  = quadf_init(player02.position, player02.width, player02.height);
@@ -217,13 +218,11 @@ void game_state_playing(game_pong_t *pong)
 
                 player01.points++;
                 game_set_current_state(pong, PLAYER01_SCORED);
-                break;
 
             } else if ( ball.position.cmp[X] <= -1.0f) {
 
                 player02.points++;
                 game_set_current_state(pong, PLAYER02_SCORED);
-                break;
 
             }
 
@@ -233,7 +232,7 @@ void game_state_playing(game_pong_t *pong)
                 ball.speed.cmp[Y] *= -1;
             }
 
-            if (window_keyboard_is_key_pressed(window, SDLK_w)) {
+            if (window_keyboard_is_key_just_pressed(window, SDLK_w)) {
 
                 player01.position = vec2f_translate(
                         player01.position, 
@@ -242,7 +241,7 @@ void game_state_playing(game_pong_t *pong)
                 if(player01.position.cmp[Y] >= 1.0f) 
                     player01.position.cmp[Y] = 1.0f;
 
-            } else if (window_keyboard_is_key_pressed(window, SDLK_s)) {
+            } else if (window_keyboard_is_key_just_pressed(window, SDLK_s)) {
 
                 player01.position = vec2f_translate(
                         player01.position, 
@@ -252,7 +251,7 @@ void game_state_playing(game_pong_t *pong)
                     player01.position.cmp[Y] = -1.0f - (-0.3f);
             }
 
-            if (window_keyboard_is_key_pressed(window, SDLK_UP)) {
+            if (window_keyboard_is_key_just_pressed(window, SDLK_UP)) {
 
                 player02.position = vec2f_translate(
                         player02.position, 
@@ -261,7 +260,7 @@ void game_state_playing(game_pong_t *pong)
                 if(player02.position.cmp[Y] >= 1.0f) 
                     player02.position.cmp[Y] = 1.0f;
 
-            } else if (window_keyboard_is_key_pressed(window, SDLK_DOWN)) {
+            } else if (window_keyboard_is_key_just_pressed(window, SDLK_DOWN)) {
 
                 player02.position = vec2f_translate(
                         player02.position, 
@@ -271,9 +270,8 @@ void game_state_playing(game_pong_t *pong)
                     player02.position.cmp[Y] = -1.0f - (-0.3f);
             }
 
-            if (window_keyboard_is_key_pressed(window, SDLK_ESCAPE)) {
+            if (window_keyboard_is_key_just_pressed(window, SDLK_ESCAPE)) {
                 game_set_current_state(pong, PAUSE);
-                break;
             }
 
 
@@ -299,26 +297,26 @@ void game_state_playing(game_pong_t *pong)
                 
                 gl_quad_t quads[4] = {
 
-                    // positions                                                        // colors          // texture_coord
-                    ball.ball_quad.vertex[0].cmp[X], ball.ball_quad.vertex[0].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    ball.ball_quad.vertex[1].cmp[X], ball.ball_quad.vertex[1].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    ball.ball_quad.vertex[2].cmp[X], ball.ball_quad.vertex[2].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    ball.ball_quad.vertex[3].cmp[X], ball.ball_quad.vertex[3].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+                    // positions                                                            // colors          // texture_coord
+                    ball.ball_quad.vertex[0].cmp[X], ball.ball_quad.vertex[0].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    ball.ball_quad.vertex[1].cmp[X], ball.ball_quad.vertex[1].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    ball.ball_quad.vertex[2].cmp[X], ball.ball_quad.vertex[2].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    ball.ball_quad.vertex[3].cmp[X], ball.ball_quad.vertex[3].cmp[Y], 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
 
-                    player01.padle.vertex[0].cmp[X], player01.padle.vertex[0].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player01.padle.vertex[1].cmp[X], player01.padle.vertex[1].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player01.padle.vertex[2].cmp[X], player01.padle.vertex[2].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player01.padle.vertex[3].cmp[X], player01.padle.vertex[3].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+                    player01.padle.vertex[0].cmp[X], player01.padle.vertex[0].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player01.padle.vertex[1].cmp[X], player01.padle.vertex[1].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player01.padle.vertex[2].cmp[X], player01.padle.vertex[2].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player01.padle.vertex[3].cmp[X], player01.padle.vertex[3].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
 
-                    player02.padle.vertex[0].cmp[X], player02.padle.vertex[0].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player02.padle.vertex[1].cmp[X], player02.padle.vertex[1].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player02.padle.vertex[2].cmp[X], player02.padle.vertex[2].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-                    player02.padle.vertex[3].cmp[X], player02.padle.vertex[3].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+                    player02.padle.vertex[0].cmp[X], player02.padle.vertex[0].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player02.padle.vertex[1].cmp[X], player02.padle.vertex[1].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player02.padle.vertex[2].cmp[X], player02.padle.vertex[2].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+                    player02.padle.vertex[3].cmp[X], player02.padle.vertex[3].cmp[Y], 0.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
 
-                    net_quad.vertex[0].cmp[X],net_quad.vertex[0].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                    net_quad.vertex[1].cmp[X],net_quad.vertex[1].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                    net_quad.vertex[2].cmp[X],net_quad.vertex[2].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                    net_quad.vertex[3].cmp[X],net_quad.vertex[3].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+                    net_quad.vertex[0].cmp[X],net_quad.vertex[0].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    net_quad.vertex[1].cmp[X],net_quad.vertex[1].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    net_quad.vertex[2].cmp[X],net_quad.vertex[2].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    net_quad.vertex[3].cmp[X],net_quad.vertex[3].cmp[Y], 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f
 
                 };
 
@@ -342,7 +340,6 @@ void game_state_playing(game_pong_t *pong)
 
                 gl_renderer2d_draw_from_batch(renderer, &batch); 
 
-
             }
             window_gl_render_end(window);
         }
@@ -365,8 +362,8 @@ void game_state_menu(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (window_keyboard_is_key_pressed(pong->window,SDLK_ESCAPE)) game_set_current_state(pong, EXIT);
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_SPACE))   game_set_current_state(pong, PLAYING);
+    if (window_keyboard_is_key_just_pressed(pong->window,SDLK_ESCAPE)) game_set_current_state(pong, EXIT);
+    if (window_keyboard_is_key_just_pressed(pong->window, SDLK_SPACE))   game_set_current_state(pong, PLAYING);
 
 }
 
@@ -401,7 +398,7 @@ void game_state_player_won(game_pong_t *pong)
 
     pong->player01.points = pong->player02.points = 0;
 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, MENU);
+    if (window_keyboard_is_key_just_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, MENU);
 }
 
 void game_state_exit(game_pong_t *pong)
@@ -417,7 +414,7 @@ void game_state_exit(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if(window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) pong->window->is_open = false;
+    if(window_keyboard_is_key_just_pressed(pong->window, SDLK_RETURN)) pong->window->is_open = false;
 
 }
 
@@ -443,8 +440,8 @@ void game_state_pause(game_pong_t *pong)
     }
     window_gl_render_end(pong->window);
 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, PLAYING); 
-    if (window_keyboard_is_key_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, EXIT); 
+    if (window_keyboard_is_key_just_pressed(pong->window, SDLK_ESCAPE)) game_set_current_state(pong, PLAYING); 
+    if (window_keyboard_is_key_just_pressed(pong->window, SDLK_RETURN)) game_set_current_state(pong, EXIT); 
     
 }
 
