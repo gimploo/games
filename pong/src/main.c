@@ -179,8 +179,6 @@ int main(void)
                 eprint("Game state type not accounted for ");
         }
 
-        /*window_cap_fps(&window);*/
-
     }
 
     gl_ascii_font_destroy(&font);

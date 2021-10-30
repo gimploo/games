@@ -90,7 +90,6 @@ REM (change whats in here to ) -
 REM                            |
 REM                            v
 :build_project_with_msvc
-    SETLOCAL
 
     set INCLUDES=/I %DEPENDENCY_DEFAULT_PATH%\SDL2\include ^
                     /I %DEPENDENCY_DEFAULT_PATH%\GLEW\include
@@ -109,7 +108,6 @@ REM                            v
         /link %CC_DEFAULT_LIBS% %LIBS% -SUBSYSTEM:windows
 
 
-    ENDLOCAL
     exit /b %errorlevel%
 
 
@@ -127,23 +125,6 @@ REM ============================================================================
     devenv /DebugExe %EXE_DEFAULT_PATH%\%EXE%
     exit /b 0
 
-:deepcleanup
-    echo [*] Cleanup in progress ...
-    if exist "%DEPENDENCY_DEFAULT_PATH%" (
-        rd /s /q "%DEPENDENCY_DEFAULT_PATH%"
-        echo [!] %DEPENDENCY_DEFAULT_PATH% directory deleted!
-    )
-    call :cleanup
-    echo [!] Cleanup done!
-    exit /b 0
-
-:cleanup
-    if exist bin (
-        rd /s /q bin
-        echo [!] bin directory deleted!
-    )
-    del /s *.pdb *.obj 2>nul
-    exit /b 0
 
 :check_dependencies_are_installed
     pushd %DEPENDENCY_DEFAULT_PATH%
@@ -182,6 +163,25 @@ REM ============================================================================
     echo [!] Successfully installed %~1!
     exit /b 0
 
-:end
-    ENDLOCAL
+:deepcleanup
+    echo [*] Cleanup in progress ...
+    if exist "%DEPENDENCY_DEFAULT_PATH%" (
+        rd /s /q "%DEPENDENCY_DEFAULT_PATH%"
+        echo [!] %DEPENDENCY_DEFAULT_PATH% directory deleted!
+    )
+    call :cleanup
+    echo [!] Cleanup done!
     exit /b 0
+
+:cleanup
+    if exist bin (
+        rd /s /q bin
+        echo [!] bin directory deleted!
+    )
+    del /s *.pdb *.obj 2>nul
+    echo [!] Removed obj files and pdb
+    exit /b 0
+
+:end 
+    echo [!] Script exiting!
+    ENDLOCAL
