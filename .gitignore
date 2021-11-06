@@ -2,5 +2,6 @@
 *.exe
 *.ilk
 *.pdb
-pong/external/*
+**/external/*
 *.obj
+*.dll
