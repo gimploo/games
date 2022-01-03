@@ -2,25 +2,7 @@
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
 
-typedef enum game_entity_type {
-
-    GET_PLAYER,
-    GET_ENEMY,
-    GET_ENEMY_EXPLODED,
-    GET_BULLET,
-    GET_ULT,
-    GET_COUNT
-
-} game_entity_type;
-
-// GAME
-typedef struct game_t {
-
-    entity_t        *player;
-    entitymanager_t manager;
-
-
-} game_t;
+#include "game.h"
 
 
 void app_init(application_t *app)
@@ -35,11 +17,13 @@ void app_init(application_t *app)
     c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec3f_t ){1.0f, 0.2f, 0.0f}));
     c_shader_t      *shader    = c_shader_init("./res/player.vs", "./res/player.fs");
     c_input_t       *input     = c_input_init(app->__window_handle);
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform, shape->radius);
 
-    entity_add_component(player, transform, c_transform_t );
-    entity_add_component(player, shape, c_shape2d_t );
-    entity_add_component(player, shader, c_shader_t );
-    entity_add_component(player, input, c_input_t );
+    entity_add_component(player, transform,     c_transform_t );
+    entity_add_component(player, shape,         c_shape2d_t );
+    entity_add_component(player, shader,        c_shader_t );
+    entity_add_component(player, input,         c_input_t );
+    entity_add_component(player, collider,      c_boxcollider2d_t );
 
     game->player = player;
 }
@@ -53,6 +37,13 @@ void app_update(application_t *app)
 
     entitymanager_update(&game->manager);
     s_movement2d(&game->manager, game->player, dt);
+
+    // collision
+    game_update_bullet_enemy_collision(&game->manager);
+    game_update_player_enemy_collision(&game->manager, game->player);
+
+    game_spawn_enemies(&game->manager);
+
 }
 
 void app_render(application_t *app)
