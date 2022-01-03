@@ -70,6 +70,7 @@ set EXE_FILE_NAME=geometrywars.exe
     echo [*] Building project (DEBUG BUILD)...
     call :build_project_with_msvc || goto :end
 
+
     if %errorlevel% == 0 (
         echo [*] Running executable ...
         call :run_executable
