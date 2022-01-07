@@ -2,14 +2,18 @@
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
 
+#define MAX_BULLET_SPEED vec3f(0.0f)
+#define BULLET_SIDE 0.2f
+
 typedef enum game_entity_type {
 
-    GET_PLAYER,
-    GET_ENEMY,
-    GET_ENEMY_EXPLODED,
-    GET_BULLET,
-    GET_ULT,
-    GET_COUNT
+    PLAYER,
+    ENEMY,
+    ET_ENEMY_EXPLODED,
+    BULLET,
+    ULT,
+
+    COUNT
 
 } game_entity_type;
 
@@ -22,12 +26,15 @@ typedef struct game_t {
 
 
 
-void game_update_bullet_enemy_collision(entitymanager_t *manager)
+void game_system_collision(entitymanager_t *manager, entity_t *player)
 {
     assert(manager);
 
-    list_t *bullets = entitymanager_get_all_entities_by_tag(manager, GET_BULLET);
-    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, GET_ENEMY);
+    c_boxcollider2d_t *pbox = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
+    assert(pbox);
+
+    list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
+    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, ENEMY);
 
     for (u64 i = 0; i < enemies->len; i++)
     {
@@ -51,16 +58,6 @@ void game_update_bullet_enemy_collision(entitymanager_t *manager)
 
         }
     }
-}
-
-void game_update_player_enemy_collision(entitymanager_t *manager, entity_t *player)
-{
-    assert(manager);
-
-    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, GET_ENEMY);
-
-    c_boxcollider2d_t *pbox = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
-    assert(pbox);
 
     for (u64 i = 0; i < enemies->len; i++)
     {
@@ -78,9 +75,63 @@ void game_update_player_enemy_collision(entitymanager_t *manager, entity_t *play
     }
 }
 
-void game_spawn_enemies(entitymanager_t *manager)
+void game_system_player_input(entitymanager_t *manager, entity_t *player)
 {
     assert(manager);
+    assert(player);
+
+    vec3f_t playerpos = ((c_transform_t *)entity_get_component(player, c_transform_t ))->position;
+
+    c_input_t *input = (c_input_t *)entity_get_component(player, c_input_t );
+    assert(input);
+
+    window_t *win = input->win; assert(win);
+
+    if (window_mouse_button_just_pressed(win)) {
+
+        entity_t *bullet = entitymanager_add_entity(manager, BULLET);
+        assert(bullet);
+
+        vec2f_t mousepos    = window_mouse_get_norm_position(win);
+
+
+        vec2f_t distancevec = vec2f_sub(
+                mousepos, 
+                (vec2f_t ){playerpos.cmp[X], playerpos.cmp[Y]});
+
+        f32 distance = vec2f_distance(
+                mousepos, 
+                (vec2f_t ){playerpos.cmp[X], playerpos.cmp[Y]});
+
+        f32 theta = atan2(distancevec.cmp[Y], distancevec.cmp[X]);
+
+        c_transform_t *t = c_transform_init(
+                playerpos,
+                MAX_BULLET_SPEED, 
+                theta);
+        assert(t);
+
+        c_shape2d_t *shape = c_shape2d_init(t, TRIANGLE, BULLET_SIDE, vec3f(0.3f));
+        assert(shape);
+
+        c_boxcollider2d_t *box = c_boxcollider2d_init(t, BULLET_SIDE);
+        assert(box);
+
+        c_shader_t *shader = c_shader_init("./res/player.vs", "./res/player.fs");
+        assert(shader);
+
+        entity_add_component(bullet, t, c_transform_t );
+        entity_add_component(bullet, shape, c_shape2d_t );
+        entity_add_component(bullet, box, c_boxcollider2d_t );
+        entity_add_component(bullet, shader, c_shader_t );
+    }
+}
+
+
+void game_system_enemy_spawner(entitymanager_t *manager)
+{
+    assert(manager);
+
 
 }
 

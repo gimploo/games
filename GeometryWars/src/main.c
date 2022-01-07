@@ -4,15 +4,18 @@
 
 #include "game.h"
 
+//TODO: component managent system
+//TODO: properly destroy shaders when done
+//TODO: have entity_get_component update the component automatically before returning the pointer to it
 
 void app_init(application_t *app)
 {
     assert(app->game);
     game_t *game = (game_t *)app->game;
-    game->manager = entitymanager_init(GET_COUNT);
+    game->manager = entitymanager_init(COUNT);
 
     // Setting up player
-    entity_t        *player    = entitymanager_add_entity(&game->manager, GET_PLAYER);
+    entity_t        *player    = entitymanager_add_entity(&game->manager, PLAYER);
     c_transform_t   *transform = c_transform_init(vec3f(0.0f), vec3f(0.4f), 0.0f);
     c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec3f_t ){1.0f, 0.2f, 0.0f}));
     c_shader_t      *shader    = c_shader_init("./res/player.vs", "./res/player.fs");
@@ -36,13 +39,16 @@ void app_update(application_t *app)
     f32 dt = application_get_dt(app);
 
     entitymanager_update(&game->manager);
+
+    // player movement system
     s_movement2d(&game->manager, game->player, dt);
+    game_system_player_input(&game->manager, game->player);
+
+    // spawns 
+    game_system_enemy_spawner(&game->manager);
 
     // collision
-    game_update_bullet_enemy_collision(&game->manager);
-    game_update_player_enemy_collision(&game->manager, game->player);
-
-    game_spawn_enemies(&game->manager);
+    game_system_collision(&game->manager, game->player);
 
 }
 
@@ -64,6 +70,7 @@ void app_shutdown(application_t *app)
 
 int main(void)
 {
+
     game_t GeometryWar;
 
     window_t win        = window_init("Geometry Wars", 700, 800, SDL_INIT_VIDEO);
