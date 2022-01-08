@@ -12,7 +12,7 @@ set GLEW_URL=https://github.com/nigels-com/glew/releases/download/glew-2.2.0/gle
 
 REM Include compiler of choice (here its msvc)
 set CC=cl
-set CC_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+set CC_PATH="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 set CC_DEFAULT_FLAGS=/std:c11 /W4 /wd4244 /wd4996 /wd4477 /wd4267 /FC /TC /Zi 
 set CC_DEFAULT_LIBS=User32.lib Gdi32.lib Shell32.lib
 
@@ -70,8 +70,12 @@ set EXE_FILE_NAME=geometrywars.exe
     echo [*] Building project (DEBUG BUILD)...
     call :build_project_with_msvc || goto :end
 
+    if "%1" == "debug" (
+        call :run_executable_with_debugger
+        goto :end
+    )
 
-    if %errorlevel% == 0 (
+    if "%1" == "run" (
         echo [*] Running executable ...
         call :run_executable
         echo [!] Exited! 
