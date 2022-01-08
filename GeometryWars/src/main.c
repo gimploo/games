@@ -17,7 +17,7 @@ void app_init(application_t *app)
     // Setting up player
     entity_t        *player    = entitymanager_add_entity(&game->manager, PLAYER);
     c_transform_t   *transform = c_transform_init(vec3f(0.0f), vec3f(0.4f), 0.0f);
-    c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec3f_t ){1.0f, 0.2f, 0.0f}));
+    c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
     c_shader_t      *shader    = c_shader_init("./res/player.vs", "./res/player.fs");
     c_input_t       *input     = c_input_init(app->__window_handle);
     c_boxcollider2d_t *collider = c_boxcollider2d_init(transform, shape->radius);

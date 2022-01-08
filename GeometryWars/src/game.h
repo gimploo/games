@@ -111,7 +111,7 @@ void game_system_player_input(entitymanager_t *manager, entity_t *player)
                 theta);
         assert(t);
 
-        c_shape2d_t *shape = c_shape2d_init(t, TRIANGLE, BULLET_SIDE, vec3f(0.3f));
+        c_shape2d_t *shape = c_shape2d_init(t, TRIANGLE, BULLET_SIDE, vec4f(0.3f));
         assert(shape);
 
         c_boxcollider2d_t *box = c_boxcollider2d_init(t, BULLET_SIDE);
