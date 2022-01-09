@@ -17,7 +17,7 @@ void app_init(application_t *app)
 
     // Setting up player
     entity_t        *player    = entitymanager_add_entity(&game->manager, PLAYER);
-    c_transform_t   *transform = c_transform_init(vec3f(0.0f), vec3f(0.4f), 0.0f);
+    c_transform_t   *transform = c_transform_init(vec3f(0.0f), 0.0f, vec3f(0.4f));
     c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
     c_shader_t      *shader    = c_shader_init("./res/player.vs", "./res/player.fs");
     c_input_t       *input     = c_input_init(app->__window_handle);
@@ -44,6 +44,9 @@ void app_update(application_t *app)
     // player movement system
     s_movement2d(&game->manager, game->player, dt);
     game_system_player_input(&game->manager, game->player);
+
+    // update all bullets
+    game_system_entity_bullet_update(&game->manager);
 
     // spawns 
     game_system_enemy_spawner(&game->manager);
