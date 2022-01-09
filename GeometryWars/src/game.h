@@ -3,7 +3,7 @@
 #include "../lib/ecs/systems.h"
 
 #define MAX_BULLET_SPEED vec3f(0.0f)
-#define BULLET_SIDE 0.2f
+#define BULLET_SIDE 0.02f
 
 typedef enum game_entity_type {
 
@@ -21,6 +21,8 @@ typedef struct game_t {
 
     entity_t        *player;
     entitymanager_t manager;
+
+    s_renderer2d_t renderer;
 
 } game_t;
 
@@ -111,7 +113,7 @@ void game_system_player_input(entitymanager_t *manager, entity_t *player)
                 theta);
         assert(t);
 
-        c_shape2d_t *shape = c_shape2d_init(t, TRIANGLE, BULLET_SIDE, vec4f(0.3f));
+        c_shape2d_t *shape = c_shape2d_init(t, CIRCLE, BULLET_SIDE, vec4f(0.3f));
         assert(shape);
 
         c_boxcollider2d_t *box = c_boxcollider2d_init(t, BULLET_SIDE);
@@ -134,4 +136,3 @@ void game_system_enemy_spawner(entitymanager_t *manager)
 
 
 }
-

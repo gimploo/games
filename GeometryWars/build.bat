@@ -122,7 +122,7 @@ REM                             -- HELPER FUNCTIONS --
 REM =======================================================================================
     
 :run_executable
-    %EXE_FOLDER_DEFAULT_PATH%\%EXE_FILE_NAME% || goto :run_executable_with_debugger
+    %EXE_FOLDER_DEFAULT_PATH%\%EXE_FILE_NAME%
     exit /b %errorlevel% 
 
 :run_executable_with_debugger

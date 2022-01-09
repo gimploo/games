@@ -13,6 +13,7 @@ void app_init(application_t *app)
     assert(app->game);
     game_t *game = (game_t *)app->game;
     game->manager = entitymanager_init(COUNT);
+    game->renderer = s_renderer2d_init();
 
     // Setting up player
     entity_t        *player    = entitymanager_add_entity(&game->manager, PLAYER);
@@ -56,8 +57,10 @@ void app_render(application_t *app)
 {
     assert(app->game);
     game_t *game = (game_t *)app->game;
+    entitymanager_t *manager = &game->manager;
+    s_renderer2d_t  *renderer = &game->renderer;
 
-    s_renderer2d_draw(&game->manager);
+    s_renderer2d_draw(renderer, manager);
 }
 
 void app_shutdown(application_t *app)
