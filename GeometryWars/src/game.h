@@ -59,13 +59,13 @@ void game_system_collision(entitymanager_t *manager, entity_t *player)
             }
 
             // Out of screen
-            if (bbox->position->cmp[X] >= 1.0f 
-                    || bbox->position->cmp[Y] >= 1.0f 
-                    || bbox->position->cmp[X] <= -1.0f 
-                    || bbox->position->cmp[Y] <= -1.0f)
-            {
-                entity_destroy(bullet);
-            }
+            //if (bbox->position->cmp[X] > 1.0f 
+                    //|| bbox->position->cmp[Y] > 1.0f 
+                    //|| bbox->position->cmp[X] < -1.0f 
+                    //|| bbox->position->cmp[Y] < -1.0f)
+            //{
+                //entity_destroy(bullet);
+            //}
 
         }
     }
@@ -91,7 +91,10 @@ void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
     assert(manager);
     assert(player);
 
-    vec3f_t playerpos = ((c_transform_t *)entity_get_component(player, c_transform_t ))->position;
+    c_transform_t *playertransform = (c_transform_t *)entity_get_component(player, c_transform_t );
+    vec3f_t playerpos = playertransform->position;
+    c_shape2d_t *playershape = (c_shape2d_t *)entity_get_component(player, c_shape2d_t );
+    f32 playerside = playershape->radius;
 
     c_input_t *input = (c_input_t *)entity_get_component(player, c_input_t );
     assert(input);
@@ -116,12 +119,12 @@ void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
     f32 theta = atan2(distancevec.cmp[Y], distancevec.cmp[X]);
 
     c_transform_t *t = c_transform_init(
-            playerpos, 
+            vec3f_add(playerpos, (vec3f_t ){+playerside/2, -playerside/2}), 
             theta,
             MAX_BULLET_SPEED);
     assert(t);
 
-    c_shape2d_t *shape = c_shape2d_init(t, CIRCLE, BULLET_SIDE, vec4f(0.3f));
+    c_shape2d_t *shape = c_shape2d_init(t, CIRCLE, BULLET_SIDE, vec4f(1.0f));
     assert(shape);
 
     c_boxcollider2d_t *box = c_boxcollider2d_init(t, BULLET_SIDE);
@@ -130,10 +133,14 @@ void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
     c_shader_t *shader = c_shader_init("./res/player.vs", "./res/player.fs");
     assert(shader);
 
+    c_lifespan_t *life = c_lifespan_init(4);
+    assert(life);
+
     entity_add_component(bullet, t, c_transform_t );
     entity_add_component(bullet, shape, c_shape2d_t );
     entity_add_component(bullet, box, c_boxcollider2d_t );
     entity_add_component(bullet, shader, c_shader_t );
+    entity_add_component(bullet, life, c_lifespan_t );
 }
 
 void game_system_player_input(entitymanager_t *manager, entity_t *player)
@@ -147,7 +154,7 @@ void game_system_player_input(entitymanager_t *manager, entity_t *player)
     window_t *win = input->win; 
     assert(win);
 
-    if (window_mouse_button_is_pressed(win)) 
+    if (window_mouse_button_just_pressed(win)) 
         game_system_spawn_bullet(manager, player);
 
 }
@@ -164,12 +171,19 @@ void game_system_entity_bullet_update(entitymanager_t *manager)
         c_transform_t *transform        = (c_transform_t *)entity_get_component(e, c_transform_t );
         c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(e, c_shape2d_t );
         c_boxcollider2d_t *collider     = (c_boxcollider2d_t *)entity_get_component(e, c_boxcollider2d_t );
+        c_lifespan_t *lifespan          = (c_lifespan_t *)entity_get_component(e, c_lifespan_t );
 
         // updates
+        lifespan->update(lifespan);
         transform->update(transform);
         shape->update(shape);
         collider->update(collider);
 
+        //
+        if(!lifespan->is_alive) 
+            entity_destroy(e);
+        else 
+            shape->fill.cmp[3] -= 0.3f;
     }
 }
 
