@@ -2,8 +2,8 @@
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
 
-#define MAX_BULLET_SPEED vec3f(0.02f)
-#define BULLET_SIDE 0.02f
+#define MAX_BULLET_SPEED 0.02f
+#define BULLET_SIDE 0.03f
 
 typedef enum game_entity_type {
 
@@ -28,9 +28,12 @@ typedef struct game_t {
 
 
 
-void game_system_collision(entitymanager_t *manager, entity_t *player)
+void game_system_collision(game_t *game)
 {
-    assert(manager);
+    assert(game);
+
+    entitymanager_t *manager = &game->manager; assert(manager);
+    entity_t *player = game->player; assert(player);
 
     c_boxcollider2d_t *pbox = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
     assert(pbox);
@@ -86,10 +89,14 @@ void game_system_collision(entitymanager_t *manager, entity_t *player)
     }
 }
 
-void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
+void game_system_spawn_bullet(game_t *game)
 {
+    entitymanager_t *manager = &game->manager; assert(manager);
+    entity_t *player = game->player; assert(player);
     assert(manager);
     assert(player);
+
+
 
     c_transform_t *playertransform = (c_transform_t *)entity_get_component(player, c_transform_t );
     vec3f_t playerpos = playertransform->position;
@@ -119,15 +126,15 @@ void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
     f32 theta = atan2(distancevec.cmp[Y], distancevec.cmp[X]);
 
     c_transform_t *t = c_transform_init(
-            vec3f_add(playerpos, (vec3f_t ){+playerside/2, -playerside/2}), 
-            theta,
-            MAX_BULLET_SPEED);
+            playerpos,
+            MAX_BULLET_SPEED,
+            theta,0.0f, 0.0f);
     assert(t);
 
-    c_shape2d_t *shape = c_shape2d_init(t, CIRCLE, BULLET_SIDE, vec4f(1.0f));
+    c_shape2d_t *shape = c_shape2d_init(t->position, CIRCLE, BULLET_SIDE, vec4f(1.0f));
     assert(shape);
 
-    c_boxcollider2d_t *box = c_boxcollider2d_init(t, BULLET_SIDE);
+    c_boxcollider2d_t *box = c_boxcollider2d_init(t->position, BULLET_SIDE);
     assert(box);
 
     c_shader_t *shader = c_shader_init("./res/player.vs", "./res/player.fs");
@@ -143,24 +150,73 @@ void game_system_spawn_bullet(entitymanager_t *manager, entity_t *player)
     entity_add_component(bullet, life, c_lifespan_t );
 }
 
-void game_system_player_input(entitymanager_t *manager, entity_t *player)
-{    
-    assert(manager);
-    assert(player);
+void game_system_player_update(game_t *game, f32 dt)
+{
+    assert(game);
 
-    c_input_t *input = (c_input_t *)entity_get_component(player, c_input_t );
-    assert(input);
+    entity_t *player = game->player; assert(player);
+
+    c_transform_t *transform        = (c_transform_t *)entity_get_component(player, c_transform_t );
+    c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(player, c_shape2d_t );
+    c_boxcollider2d_t  *collider    = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
+    c_input_t  *input               = (c_input_t *)entity_get_component(player, c_input_t );
 
     window_t *win = input->win; 
     assert(win);
 
-    if (window_mouse_button_just_pressed(win)) 
-        game_system_spawn_bullet(manager, player);
+    if (window_keyboard_is_key_pressed(win, SDLK_d)) {
+
+        transform->position = vec3f_add(
+                transform->position, 
+                (vec3f_t ){ transform->velocity.cmp[X] * dt, 0.0f, 0.0f });
+
+    } 
+
+    if (window_keyboard_is_key_pressed(win, SDLK_a)) {
+
+        transform->position = vec3f_add(
+                transform->position, 
+                (vec3f_t ){ -transform->velocity.cmp[X] *dt , 0.0f, 0.0f });
+
+    } 
+
+    if (window_keyboard_is_key_pressed(win, SDLK_w)) {
+
+        transform->position = vec3f_add(
+                transform->position, 
+                (vec3f_t ){ 0.0f, transform->velocity.cmp[Y] *dt, 0.0f });
+
+    } 
+
+    if (window_keyboard_is_key_pressed(win, SDLK_s)) {
+
+        transform->position = vec3f_add(
+                transform->position, 
+                (vec3f_t ){ 0.0f, -transform->velocity.cmp[Y] *dt, 0.0f });
+
+    } 
+
+    transform_shape2d_update(transform, shape);
+    transform_boxcollider2d_update(transform, collider);
+
+
+    // NOTE: MANAGES THE FIRE RATE OF THE PLAYER
+    static f32 framerate_counter = 0.0f;
+    if (framerate_counter == 4.0f) {
+
+        if (window_mouse_button_just_pressed(win))  game_system_spawn_bullet(game);
+        framerate_counter = 0.0f;
+
+    } else framerate_counter++;
+    
 
 }
 
-void game_system_entity_bullet_update(entitymanager_t *manager)
+void game_system_bullet_update(game_t *game, f32 dt)
 {
+    entitymanager_t *manager = &game->manager; assert(manager);
+    assert(manager);
+
     list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
 
     for (u64 i = 0; i < bullets->len; i++)
@@ -173,23 +229,23 @@ void game_system_entity_bullet_update(entitymanager_t *manager)
         c_boxcollider2d_t *collider     = (c_boxcollider2d_t *)entity_get_component(e, c_boxcollider2d_t );
         c_lifespan_t *lifespan          = (c_lifespan_t *)entity_get_component(e, c_lifespan_t );
 
-        // updates
-        lifespan->update(lifespan);
-        transform->update(transform);
-        shape->update(shape);
-        collider->update(collider);
-
-        //
+        
         if(!lifespan->is_alive) 
             entity_destroy(e);
         else 
-            shape->fill.cmp[3] -= 0.3f;
+            shape->fill.cmp[0] -= 0.4f;
+
+
+        c_transform_update(transform);
+        transform_shape2d_update(transform, shape);
+        transform_boxcollider2d_update(transform, collider);
+
     }
 }
 
-void game_system_enemy_spawner(entitymanager_t *manager)
+void game_system_enemy_spawner(game_t *game)
 {
-    assert(manager);
+    assert(game);
 
 
 }

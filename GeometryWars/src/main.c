@@ -2,11 +2,13 @@
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
 
+
 #include "game.h"
 
 //TODO: component managent system
 //TODO: properly destroy shaders when done
-//TODO: have entity_get_component update the component automatically before returning the pointer to it
+//TODO: rotation 
+//TODO: lower the color opacity of the bullet
 
 void app_init(application_t *app)
 {
@@ -16,12 +18,13 @@ void app_init(application_t *app)
     game->renderer = s_renderer2d_init();
 
     // Setting up player
-    entity_t        *player    = entitymanager_add_entity(&game->manager, PLAYER);
-    c_transform_t   *transform = c_transform_init(vec3f(0.0f), 0.0f, vec3f(0.4f));
-    c_shape2d_t     *shape     = c_shape2d_init(transform, SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
-    c_shader_t      *shader    = c_shader_init("./res/player.vs", "./res/player.fs");
-    c_input_t       *input     = c_input_init(app->__window_handle);
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform, shape->radius);
+    entity_t        *player     = entitymanager_add_entity(&game->manager, PLAYER);
+   c_transform_t   *transform  = c_transform_init(vec3f(0.0f), 0.6f, PI / 4, 0.02f, PI / 4);
+    /*c_transform_t   *transform  = c_transform_init(vec3f(0.0f), 0.6f, PI / 4, 0.0f, 0.0f);*/
+    c_shape2d_t     *shape      = c_shape2d_init(transform->position, SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
+    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
+    c_input_t       *input      = c_input_init(app->__window_handle);
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
 
     entity_add_component(player, transform,     c_transform_t );
     entity_add_component(player, shape,         c_shape2d_t );
@@ -41,18 +44,17 @@ void app_update(application_t *app)
 
     entitymanager_update(&game->manager);
 
-    // player movement system
-    s_movement2d(&game->manager, game->player, dt);
-    game_system_player_input(&game->manager, game->player);
+    // player update
+    game_system_player_update(game, dt);
 
-    // update all bullets
-    game_system_entity_bullet_update(&game->manager);
+    // bullet update
+    game_system_bullet_update(game, dt);
 
     // spawns 
-    game_system_enemy_spawner(&game->manager);
+    game_system_enemy_spawner(game);
 
     // collision
-    game_system_collision(&game->manager, game->player);
+    game_system_collision(game);
 
 }
 
