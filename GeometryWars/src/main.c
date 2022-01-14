@@ -18,21 +18,7 @@ void app_init(application_t *app)
     game->renderer = s_renderer2d_init();
 
     // Setting up player
-    entity_t        *player     = entitymanager_add_entity(&game->manager, PLAYER);
-   c_transform_t   *transform  = c_transform_init(vec3f(0.0f), 0.6f, PI / 4, 0.02f, PI / 4);
-    /*c_transform_t   *transform  = c_transform_init(vec3f(0.0f), 0.6f, PI / 4, 0.0f, 0.0f);*/
-    c_shape2d_t     *shape      = c_shape2d_init(transform->position, SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
-    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
-    c_input_t       *input      = c_input_init(app->__window_handle);
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
-
-    entity_add_component(player, transform,     c_transform_t );
-    entity_add_component(player, shape,         c_shape2d_t );
-    entity_add_component(player, shader,        c_shader_t );
-    entity_add_component(player, input,         c_input_t );
-    entity_add_component(player, collider,      c_boxcollider2d_t );
-
-    game->player = player;
+    game_system_spawn_player(game, app->__window_handle);
 }
 
 void app_update(application_t *app)

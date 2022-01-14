@@ -6,6 +6,8 @@ layout (location = 2) in vec2 v_tex_coord;
 out vec4 color;
 out vec2 tex_coord;
 
+uniform mat4 gRotation;
+
 void main()
 {
     gl_Position = vec4(v_pos, 1.0f);

@@ -26,6 +26,34 @@ typedef struct game_t {
 
 } game_t;
 
+#define PLAYER_SPEED 0.6f
+
+void game_system_spawn_player(game_t *game, window_t *win)
+{
+    entity_t        *player     = entitymanager_add_entity(&game->manager, PLAYER);
+
+    c_transform_t   *transform  = c_transform_init(
+            vec3f(0.0f), 
+            vec3f(PLAYER_SPEED), 
+            0.02f, PI / 8);
+
+    c_shape2d_t     *shape      = c_shape2d_init(SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
+    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
+    c_input_t       *input      = c_input_init(win);
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
+    c_mesh2d_t      *mesh       = c_mesh2d_init();
+
+    entity_add_component(player, transform,     c_transform_t );
+    entity_add_component(player, shape,         c_shape2d_t );
+    entity_add_component(player, shader,        c_shader_t );
+    entity_add_component(player, input,         c_input_t );
+    entity_add_component(player, collider,      c_boxcollider2d_t );
+    entity_add_component(player, mesh,          c_mesh2d_t );
+
+    transform_c_shape2d_mesh2d_update(transform, shape, mesh);
+
+    game->player = player;
+}
 
 
 void game_system_collision(game_t *game)
@@ -127,11 +155,11 @@ void game_system_spawn_bullet(game_t *game)
 
     c_transform_t *t = c_transform_init(
             playerpos,
-            MAX_BULLET_SPEED,
-            theta,0.0f, 0.0f);
+            vec3f_init(MAX_BULLET_SPEED, theta),
+            0.0f, 0.0f);
     assert(t);
 
-    c_shape2d_t *shape = c_shape2d_init(t->position, CIRCLE, BULLET_SIDE, vec4f(1.0f));
+    c_shape2d_t *shape = c_shape2d_init(CIRCLE, BULLET_SIDE, vec4f(1.0f));
     assert(shape);
 
     c_boxcollider2d_t *box = c_boxcollider2d_init(t->position, BULLET_SIDE);
@@ -143,11 +171,17 @@ void game_system_spawn_bullet(game_t *game)
     c_lifespan_t *life = c_lifespan_init(4);
     assert(life);
 
+    c_mesh2d_t *mesh = c_mesh2d_init();
+    assert(mesh);
+
     entity_add_component(bullet, t, c_transform_t );
     entity_add_component(bullet, shape, c_shape2d_t );
     entity_add_component(bullet, box, c_boxcollider2d_t );
     entity_add_component(bullet, shader, c_shader_t );
     entity_add_component(bullet, life, c_lifespan_t );
+    entity_add_component(bullet, mesh, c_mesh2d_t );
+
+    transform_c_shape2d_mesh2d_update(t, shape, mesh);
 }
 
 void game_system_player_update(game_t *game, f32 dt)
@@ -160,51 +194,53 @@ void game_system_player_update(game_t *game, f32 dt)
     c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(player, c_shape2d_t );
     c_boxcollider2d_t  *collider    = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
     c_input_t  *input               = (c_input_t *)entity_get_component(player, c_input_t );
+    c_shader_t *shader              = (c_shader_t *)entity_get_component(player, c_shader_t );
+    c_mesh2d_t *mesh                = (c_mesh2d_t *)entity_get_component(player, c_mesh2d_t );
 
     window_t *win = input->win; 
     assert(win);
 
     if (window_keyboard_is_key_pressed(win, SDLK_d)) {
 
-        transform->position = vec3f_add(
-                transform->position, 
-                (vec3f_t ){ transform->velocity.cmp[X] * dt, 0.0f, 0.0f });
-
+        transform->velocity = (vec3f_t ){ PLAYER_SPEED * dt, 0.0f, 0.0f };
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
+        transform_boxcollider2d_update(transform, collider);
     } 
 
     if (window_keyboard_is_key_pressed(win, SDLK_a)) {
 
-        transform->position = vec3f_add(
-                transform->position, 
-                (vec3f_t ){ -transform->velocity.cmp[X] *dt , 0.0f, 0.0f });
+        transform->velocity = (vec3f_t ){ -PLAYER_SPEED *dt , 0.0f, 0.0f };
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
+        transform_boxcollider2d_update(transform, collider);
 
     } 
 
     if (window_keyboard_is_key_pressed(win, SDLK_w)) {
 
-        transform->position = vec3f_add(
-                transform->position, 
-                (vec3f_t ){ 0.0f, transform->velocity.cmp[Y] *dt, 0.0f });
+        transform->velocity = (vec3f_t ){ 0.0f, PLAYER_SPEED *dt, 0.0f };
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
+        transform_boxcollider2d_update(transform, collider);
 
     } 
 
     if (window_keyboard_is_key_pressed(win, SDLK_s)) {
 
-        transform->position = vec3f_add(
-                transform->position, 
-                (vec3f_t ){ 0.0f, -transform->velocity.cmp[Y] *dt, 0.0f });
-
+        transform->velocity = (vec3f_t ){ 0.0f, -PLAYER_SPEED *dt, 0.0f };
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
+        transform_boxcollider2d_update(transform, collider);
     } 
 
-    transform_shape2d_update(transform, shape);
-    transform_boxcollider2d_update(transform, collider);
-
+    transform->velocity = (vec3f_t ){0};
 
     // NOTE: MANAGES THE FIRE RATE OF THE PLAYER
     static f32 framerate_counter = 0.0f;
     if (framerate_counter == 4.0f) {
 
-        if (window_mouse_button_just_pressed(win))  game_system_spawn_bullet(game);
+        //if (window_mouse_button_just_pressed(win))  game_system_spawn_bullet(game);
         framerate_counter = 0.0f;
 
     } else framerate_counter++;
@@ -228,6 +264,7 @@ void game_system_bullet_update(game_t *game, f32 dt)
         c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(e, c_shape2d_t );
         c_boxcollider2d_t *collider     = (c_boxcollider2d_t *)entity_get_component(e, c_boxcollider2d_t );
         c_lifespan_t *lifespan          = (c_lifespan_t *)entity_get_component(e, c_lifespan_t );
+        c_mesh2d_t *mesh                = (c_mesh2d_t *)entity_get_component(e, c_mesh2d_t );
 
         
         if(!lifespan->is_alive) 
@@ -235,9 +272,8 @@ void game_system_bullet_update(game_t *game, f32 dt)
         else 
             shape->fill.cmp[0] -= 0.4f;
 
-
-        c_transform_update(transform);
-        transform_shape2d_update(transform, shape);
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
         transform_boxcollider2d_update(transform, collider);
 
     }
