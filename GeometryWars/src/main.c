@@ -68,7 +68,7 @@ int main(void)
     game_t GeometryWar;
 
     window_t win        = window_init("Geometry Wars", 700, 800, SDL_INIT_VIDEO);
-    window_set_background(&win, vec4f(0.0f));
+    window_set_background(&win, COLOR_BLACK);
     application_t app   = application_init(&win);
     application_pass_game(&app, &GeometryWar);
 

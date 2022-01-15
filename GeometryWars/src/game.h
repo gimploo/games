@@ -88,13 +88,7 @@ void game_system_collision(game_t *game)
                 entity_destroy(enemy);
             }
 
-            //if (bbox->position->cmp[X] > 1.0f 
-                    //|| bbox->position->cmp[Y] > 1.0f 
-                    //|| bbox->position->cmp[X] < -1.0f 
-                    //|| bbox->position->cmp[Y] < -1.0f)
-            //{
-                //entity_destroy(bullet);
-            //}
+            //TODO: rework collision properly
 
         }
     }
@@ -230,6 +224,8 @@ void game_system_player_update(game_t *game, f32 dt)
         transform_boxcollider2d_update(transform, collider);
     } 
 
+
+
     transform->velocity = (vec3f_t ){0};
     transform_update(transform);
     transform_mesh2d_update(transform ,mesh);
@@ -268,6 +264,8 @@ void game_system_bullet_update(game_t *game, f32 dt)
 
         if(!lifespan->is_alive) 
             entity_destroy(e);
+        else 
+            shape->fill.cmp[3] -= 0.2f;
 
 
         transform_update(transform);
