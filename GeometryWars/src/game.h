@@ -34,7 +34,7 @@ void game_system_spawn_player(game_t *game, window_t *win)
 
     c_transform_t   *transform  = c_transform_init(
                                         vec3f(0.0f), vec3f(0.0f),
-                                        0.02f, PI / 19);
+                                        0.02f, 0.012f);
 
     c_shape2d_t     *shape      = c_shape2d_init(SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
     c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
@@ -88,7 +88,6 @@ void game_system_collision(game_t *game)
                 entity_destroy(enemy);
             }
 
-            // Out of screen
             //if (bbox->position->cmp[X] > 1.0f 
                     //|| bbox->position->cmp[Y] > 1.0f 
                     //|| bbox->position->cmp[X] < -1.0f 
