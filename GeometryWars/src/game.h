@@ -4,6 +4,7 @@
 
 #define MAX_BULLET_SPEED 0.02f
 #define BULLET_SIDE 0.03f
+#define PLAYER_SPEED 0.6f
 
 typedef enum game_entity_type {
 
@@ -26,7 +27,6 @@ typedef struct game_t {
 
 } game_t;
 
-#define PLAYER_SPEED 0.6f
 
 void game_system_spawn_player(game_t *game, window_t *win)
 {
