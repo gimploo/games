@@ -88,8 +88,6 @@ void game_system_collision(game_t *game)
                 entity_destroy(enemy);
             }
 
-            //TODO: rework collision properly
-
         }
     }
 
@@ -156,7 +154,7 @@ void game_system_spawn_bullet(game_t *game)
     c_shader_t *shader = c_shader_init("./res/bullet.vs", "./res/bullet.fs");
     assert(shader);
 
-    c_lifespan_t *life = c_lifespan_init(4);
+    c_lifespan_t *life = c_lifespan_init(40);
     assert(life);
 
     c_mesh2d_t *mesh = c_mesh2d_init();
@@ -189,29 +187,22 @@ void game_system_player_update(game_t *game, f32 dt)
     window_t *win = input->win; 
     assert(win);
 
+    transform->velocity = vec3f(0.0f);
+
     if (window_keyboard_is_key_pressed(win, SDLK_d)) {
 
         transform->velocity = (vec3f_t ){ PLAYER_SPEED * dt, 0.0f, 0.0f };
-        transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
-        transform_boxcollider2d_update(transform, collider);
     } 
 
     if (window_keyboard_is_key_pressed(win, SDLK_a)) {
 
         transform->velocity = (vec3f_t ){ -PLAYER_SPEED *dt , 0.0f, 0.0f };
-        transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
-        transform_boxcollider2d_update(transform, collider);
 
     } 
 
     if (window_keyboard_is_key_pressed(win, SDLK_w)) {
 
         transform->velocity = (vec3f_t ){ 0.0f, PLAYER_SPEED *dt, 0.0f };
-        transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
-        transform_boxcollider2d_update(transform, collider);
 
     } 
 
@@ -219,16 +210,18 @@ void game_system_player_update(game_t *game, f32 dt)
 
         transform->velocity = (vec3f_t ){ 0.0f, -PLAYER_SPEED *dt, 0.0f };
 
-        transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
-        transform_boxcollider2d_update(transform, collider);
     } 
 
+    if (collision2d_check_out_of_screen(collider)) {
 
+        transform->velocity = vec3f_scale(transform->velocity, -6.0f);
 
-    transform->velocity = (vec3f_t ){0};
+    }
+
     transform_update(transform);
     transform_mesh2d_update(transform ,mesh);
+    transform_boxcollider2d_update(transform, collider);
+
 
     // NOTE: MANAGES THE FIRE RATE OF THE PLAYER
     static f32 framerate_counter = 0.0f;
@@ -265,14 +258,14 @@ void game_system_bullet_update(game_t *game, f32 dt)
         if(!lifespan->is_alive) 
             entity_destroy(e);
         else 
-            shape->fill.cmp[3] -= 0.2f;
+            shape->fill.cmp[3] -= 0.02f;
 
 
         transform_update(transform);
         transform_mesh2d_update(transform, mesh);
         transform_boxcollider2d_update(transform, collider);
-        lifespan->update(lifespan);
 
+        lifespan->update(lifespan, 1);
 
     }
 }
