@@ -2,7 +2,7 @@
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
 
-#define MAX_BULLET_SPEED 0.02f
+#define MAX_BULLET_SPEED 0.08f
 #define BULLET_SIDE 0.03f
 #define PLAYER_SPEED 0.6f
 
@@ -54,6 +54,47 @@ void game_system_spawn_player(game_t *game, window_t *win)
     game->player = player;
 }
 
+void game_system_enemy_spawner(game_t *game, f32 dt)
+{
+    assert(game);
+
+    static f32 delay = 0.0f; 
+    if (delay > 4.0f) {
+        delay = 0.0f;
+    } else {
+        delay += 1.0f *dt;
+        return;
+    }
+
+    entity_t *player = game->player;
+
+    entitymanager_t *manager    = &game->manager;
+    entity_t *enemy             = entitymanager_add_entity(manager, ENEMY);
+    assert(enemy);
+
+    vec3f_t pos = vec3f(0.0f);
+
+    vec3f_t vel = vec3f(vec2f(0.002f));
+
+    c_transform_t   *transform  = c_transform_init(
+                                        pos, vel,
+                                        0.f, 0.012f);
+
+    c_shape2d_t     *shape      = c_shape2d_init(SQUARE, 0.2, COLOR_WHITE);
+    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
+    c_mesh2d_t      *mesh       = c_mesh2d_init();
+
+    entity_add_component(enemy, transform,     c_transform_t );
+    entity_add_component(enemy, shape,         c_shape2d_t );
+    entity_add_component(enemy, shader,        c_shader_t );
+    entity_add_component(enemy, collider,      c_boxcollider2d_t );
+    entity_add_component(enemy, mesh,          c_mesh2d_t );
+
+    transform_c_shape2d_mesh2d_update(transform, shape, mesh);
+
+}
+
 
 void game_system_collision(game_t *game)
 {
@@ -70,14 +111,14 @@ void game_system_collision(game_t *game)
 
     for (u64 i = 0; i < enemies->len; i++)
     {
-        entity_t *enemy = (entity_t *)list_get_element_by_index(enemies, i);
+        entity_t *enemy = *(entity_t **)list_get_element_by_index(enemies, i);
         assert(enemy);
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
         if (ebox == NULL) eprint("enemy entity is missing a box collider");
 
         for (u64 j = 0; j < bullets->len; j++)
         {
-            entity_t *bullet = (entity_t *)list_get_element_by_index(bullets, j);
+            entity_t *bullet = *(entity_t **)list_get_element_by_index(bullets, j);
             assert(bullet);
             c_boxcollider2d_t *bbox = (c_boxcollider2d_t *)entity_get_component(bullet, c_boxcollider2d_t );
             if (bbox == NULL) eprint("bullet entity is missing a box collider");
@@ -93,7 +134,7 @@ void game_system_collision(game_t *game)
 
     for (u64 i = 0; i < enemies->len; i++)
     {
-        entity_t *enemy = (entity_t *)list_get_element_by_index(enemies, i);
+        entity_t *enemy = *(entity_t **)list_get_element_by_index(enemies, i);
         assert(enemy);
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
         if (ebox == NULL) eprint("enemy entity is missing a box collider");
@@ -101,7 +142,7 @@ void game_system_collision(game_t *game)
         if (collision2d_check_collision_by_AABB(ebox, pbox))
         {
             entity_destroy(enemy);
-            entity_destroy(player);
+            //entity_destroy(player);
         }
 
     }
@@ -270,9 +311,31 @@ void game_system_bullet_update(game_t *game, f32 dt)
     }
 }
 
-void game_system_enemy_spawner(game_t *game)
+void game_system_enemy_update(game_t *game, f32 dt)
 {
-    assert(game);
+    entitymanager_t *manager = &game->manager;
+    assert(manager);
+
+    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, ENEMY);
+    assert(enemies);
+
+    for (u64 i = 0; i < enemies->len; i++)
+    {
+        entity_t *e = *(entity_t **)list_get_element_by_index(enemies, i);
+        assert(e);
+
+        // components
+        c_transform_t *transform        = (c_transform_t *)entity_get_component(e, c_transform_t );
+        c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(e, c_shape2d_t );
+        c_boxcollider2d_t *collider     = (c_boxcollider2d_t *)entity_get_component(e, c_boxcollider2d_t );
+        c_mesh2d_t *mesh                = (c_mesh2d_t *)entity_get_component(e, c_mesh2d_t );
+        c_shader_t *shader              = (c_shader_t *)entity_get_component(e, c_shader_t );
 
 
+        transform_update(transform);
+        transform_mesh2d_update(transform, mesh);
+        transform_boxcollider2d_update(transform, collider);
+
+    }
 }
+
