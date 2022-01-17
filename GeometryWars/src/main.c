@@ -38,9 +38,11 @@ void app_update(application_t *app)
     // bullet update
     game_system_bullet_update(game, dt);
 
-
     // collision
     game_system_collision(game);
+
+    // explosion
+    game_system_explosion_update(game);
 
 }
 
