@@ -51,7 +51,6 @@ void game_system_spawn_player(game_t *game, window_t *win)
     entity_add_component(player, collider,      c_boxcollider2d_t );
     entity_add_component(player, mesh,          c_mesh2d_t );
 
-
     game->player = player;
 }
 
@@ -100,8 +99,6 @@ void game_system_enemy_spawner(game_t *game, f32 dt)
 
     f32 theta = atan2(distancevec.cmp[Y], distancevec.cmp[X]);
 
-
-    printf("pos generated " VEC3F_FMT "\n", VEC3F_ARG(&enemypos));
 
 
     c_transform_t   *transform  = c_transform_init(
@@ -257,6 +254,7 @@ void game_system_bullet_update(game_t *game, f32 dt)
     assert(manager);
 
     list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
+    assert(bullets);
 
     for (u64 i = 0; i < bullets->len; i++)
     {

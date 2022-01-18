@@ -4,7 +4,6 @@
 
 #include "game.h"
 
-
 void app_init(application_t *app)
 {
     assert(app->game);
@@ -63,10 +62,12 @@ void app_shutdown(application_t *app)
     game_t *game = (game_t *)app->game;
 
     entitymanager_destroy(&game->manager);
+    s_renderer2d_destroy(&game->renderer);
 }
 
 int main(void)
 {
+
     game_t GeometryWar;
 
     // Setup window
