@@ -1,6 +1,7 @@
 #pragma once
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
+#include "../lib/font/glbitmapfont.h"
 
 #define MAX_BULLET_SPEED    0.08f
 #define BULLET_SIDE         0.03f
@@ -25,13 +26,26 @@ typedef struct game_t {
     entity_t        *player;
     entitymanager_t manager;
 
+    glbitmapfont_t font;
     s_renderer2d_t renderer;
+
+    // points
+    u8 points;
+
+    // ult cooldown
+    bool ult_ready;
+    bool ult_active;
 
 } game_t;
 
 
 void game_system_spawn_player(game_t *game, window_t *win)
 {
+
+    game->ult_ready = false;
+    game->ult_active = false;
+    game->points = 0;
+
     entity_t        *player     = entitymanager_add_entity(&game->manager, PLAYER);
 
     c_transform_t   *transform  = c_transform_init(
@@ -184,6 +198,62 @@ void game_system_spawn_bullet(game_t *game)
 
 }
 
+void game_system_spawn_ult(game_t *game, entity_t *player)
+{
+    assert(game);
+    assert(player);
+
+    if (game->ult_active == true) return;
+
+    entity_t *ult        = entitymanager_add_entity(&game->manager, ULT);
+    c_lifespan_t *life  = c_lifespan_init(40);
+    entity_add_component(ult, life, c_lifespan_t );
+
+    list_t *enemies = entitymanager_get_all_entities_by_tag(&game->manager, ENEMY);
+    assert(enemies);
+
+    for (u32 i = 0; i < enemies->len; i++)
+    {
+        entity_t *e = *(entity_t **)list_get_element_by_index(enemies, i);
+        assert(e);
+
+        if (!e->is_alive) continue;
+
+        c_transform_t *t = (c_transform_t *)entity_get_component(e, c_transform_t );
+        assert(t);
+
+        t->velocity = vec3f_scale(t->velocity, 1/3);
+    }
+
+    game->ult_active = true;
+    game->ult_ready = false;
+
+}
+
+void game_system_ult_update(game_t *game)
+{
+    assert(game);
+
+    list_t *ult = entitymanager_get_all_entities_by_tag(&game->manager, ULT);
+    assert(ult);
+
+    if (ult->len == 0) return;
+
+    entity_t *e = *(entity_t **)list_get_element_by_index(ult, 0);
+    assert(e);
+
+    c_lifespan_t *cmp = (c_lifespan_t *)entity_get_component(e, c_lifespan_t );
+
+    if (!cmp->is_alive || !game->ult_active) {
+        entity_destroy(e);
+        game->ult_active = false;
+        return;
+    } 
+
+    cmp->update(cmp, 1);
+
+}
+
 void game_system_player_update(game_t *game, f32 dt)
 {
     assert(game);
@@ -224,6 +294,29 @@ void game_system_player_update(game_t *game, f32 dt)
         transform->velocity = (vec3f_t ){ 0.0f, -PLAYER_SPEED *dt, 0.0f };
 
     } 
+    
+    // ULT COOLDOWN
+    static f32 ult_cooldown = 0.0f;
+    if (ult_cooldown >= 8.0f) {
+
+        if (game->ult_ready && window_keyboard_is_key_pressed(win, SDLK_SPACE))  {
+            game_system_spawn_ult(game, player);
+            ult_cooldown = 0.0f;
+        }
+
+    } else ult_cooldown++;
+
+    // BULLET RATE
+    static f32 bulletrate = 0.0f;
+    if (bulletrate >= 6.0f) {
+
+        if (window_mouse_button_just_pressed(win))  {
+            game_system_spawn_bullet(game);
+            bulletrate = 0.0f;
+        }
+
+    } else bulletrate++;
+
 
     if (collision2d_check_out_of_screen(collider)) {
 
@@ -231,20 +324,23 @@ void game_system_player_update(game_t *game, f32 dt)
 
     }
 
+
     transform_update(transform);
     transform_mesh2d_update(transform ,mesh);
     transform_boxcollider2d_update(transform, collider);
 
 
-    // NOTE: MANAGES THE FIRE RATE OF THE PLAYER
-    static f32 framerate_counter = 0.0f;
-    if (framerate_counter == 4.0f) {
+    //ULT CHECKS
+    if (game->points > 4) {
 
-        if (window_mouse_button_just_pressed(win))  game_system_spawn_bullet(game);
-        framerate_counter = 0.0f;
+        game->ult_ready = true;
+        shape->fill = COLOR_GREEN;
 
-    } else framerate_counter++;
-    
+    } else if (game->points == 0) {
+
+        game->ult_ready = false;
+        shape->fill = COLOR_RED;
+    }
 
 }
 
@@ -384,7 +480,7 @@ void game_system_explosion_update(game_t *game)
     }
 }
 
-void game_system_collision(game_t *game)
+void game_system_collision(game_t *game, f32 dt)
 {
     assert(game);
 
@@ -416,6 +512,8 @@ void game_system_collision(game_t *game)
                 entity_destroy(bullet);
                 entity_destroy(enemy);
 
+                game->points++;
+
                 game_system_spawn_explosion(game, enemy);
             }
 
@@ -429,11 +527,21 @@ void game_system_collision(game_t *game)
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
         if (ebox == NULL) eprint("enemy entity is missing a box collider");
 
-        if (collision2d_check_collision_by_AABB(ebox, pbox))
+        if (collision2d_check_out_of_screen(ebox))
         {
             entity_destroy(enemy);
-            //entity_destroy(player);
+            continue;
+        }
+
+        if (collision2d_check_collision_by_AABB(ebox, pbox))
+        {
+            game->points = 0;
+            game->ult_ready = false;
+            game->ult_active = false;
+
+            entity_destroy(enemy);
             game_system_spawn_explosion(game, enemy);
+
         }
 
     }
