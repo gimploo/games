@@ -4,6 +4,7 @@
 
 #include "game.h"
 
+
 void app_init(application_t *app)
 {
     assert(app->game);
@@ -11,9 +12,6 @@ void app_init(application_t *app)
     game_t *game    = (game_t *)app->game;
     game->manager   = entitymanager_init(COUNT);
     game->renderer  = s_renderer2d_init();
-    game->font      = glbitmapfont_init("./lib/res/ascii_fonts/glyph_atlas.png", 16, 6);
-
-    glbitmapfont_set_font_size(&game->font, 0.06f);
 
     // Setting up player
     game_system_spawn_player(game, app->__window_handle);
@@ -27,12 +25,6 @@ void app_update(application_t *app)
     f32 dt          = application_get_dt(app);
     f32 fps         = application_get_fps(app);
 
-    char buffer[16];
-    snprintf(buffer, sizeof(buffer), "Points:%02i", game->points);
-    glbitmapfont_set_text(&game->font, buffer, (vec2f_t ){-1.0f, 1.0f});
-
-    snprintf(buffer, sizeof(buffer), "FPS:%0.2f", fps);
-    glbitmapfont_set_text(&game->font, buffer, (vec2f_t ){0.5f, 1.0f});
 
     entitymanager_update(&game->manager);
 
@@ -66,7 +58,6 @@ void app_render(application_t *app)
     entitymanager_t *manager    = &game->manager;
     s_renderer2d_t *renderer    = &game->renderer;
 
-    glbitmapfont_draw(&game->font);
     s_renderer2d_draw(renderer, manager);
 }
 
@@ -77,8 +68,6 @@ void app_shutdown(application_t *app)
 
     entitymanager_destroy(&game->manager);
     s_renderer2d_destroy(&game->renderer);
-    glbitmapfont_destroy(&game->font);
-
 }
 
 int main(void)

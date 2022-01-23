@@ -40,7 +40,7 @@ function compile_in_linux {
 
     local FILE_PATH="$1"
 
-    $CC $FILE_PATH $FLAGS $LINKERS -o ./bin/$EXE_NAME
+    $CC $FILE_PATH -DDEBUG $FLAGS $LINKERS -o ./bin/$EXE_NAME
 
 }
 

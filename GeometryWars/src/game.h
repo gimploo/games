@@ -1,10 +1,10 @@
 #pragma once
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
-#include "../lib/font/glbitmapfont.h"
 
 #define MAX_BULLET_SPEED    0.08f
 #define BULLET_SIDE         0.03f
+#define PLAYER_SIDE         0.2f
 #define ENEMY_SIDE          0.2f
 #define PLAYER_SPEED        0.6f
 #define ENEMY_SPEED         0.008f
@@ -26,7 +26,6 @@ typedef struct game_t {
     entity_t        *player;
     entitymanager_t manager;
 
-    glbitmapfont_t font;
     s_renderer2d_t renderer;
 
     // points
@@ -52,10 +51,10 @@ void game_system_spawn_player(game_t *game, window_t *win)
                                         vec3f(0.0f), vec3f(0.0f),
                                         0.02f, 0.012f);
 
-    c_shape2d_t     *shape      = c_shape2d_init(SQUARE, 0.2, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
+    c_shape2d_t     *shape      = c_shape2d_init(SQUARE, PLAYER_SIDE, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
     c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
     c_input_t       *input      = c_input_init(win);
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(PLAYER_SIDE));
     c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
 
     entity_add_component(player, transform,     c_transform_t );
@@ -121,7 +120,7 @@ void game_system_enemy_spawner(game_t *game, f32 dt)
 
     c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_WHITE);
     c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(transform->position, shape->radius);
+    c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(ENEMY_SIDE));
     c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
 
     entity_add_component(enemy, transform,     c_transform_t );
@@ -176,7 +175,7 @@ void game_system_spawn_bullet(game_t *game)
     c_shape2d_t *shape = c_shape2d_init(CIRCLE, BULLET_SIDE, COLOR_CYAN);
     assert(shape);
 
-    c_boxcollider2d_t *box = c_boxcollider2d_init(t->position, BULLET_SIDE);
+    c_boxcollider2d_t *box = c_boxcollider2d_init(vec2f(BULLET_SIDE));
     assert(box);
 
     c_shader_t *shader = c_shader_init("./res/bullet.vs", "./res/bullet.fs");
@@ -318,16 +317,14 @@ void game_system_player_update(game_t *game, f32 dt)
     } else bulletrate++;
 
 
-    if (collision2d_check_out_of_screen(collider)) {
-
-        transform->velocity = vec3f_scale(transform->velocity, -6.0f);
-
-    }
-
-
     transform_update(transform);
-    transform_mesh2d_update(transform ,mesh);
     transform_boxcollider2d_update(transform, collider);
+    if (collision2d_check_out_of_screen(collider))
+    {
+        transform->velocity = vec3f(0.0f);
+        transform->position = transform->prev_position;
+    }
+    transform_mesh2d_update(transform ,mesh);
 
 
     //ULT CHECKS
@@ -372,8 +369,8 @@ void game_system_bullet_update(game_t *game, f32 dt)
 
 
         transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
         transform_boxcollider2d_update(transform, collider);
+        transform_mesh2d_update(transform, mesh);
 
         lifespan->update(lifespan, 1);
 
@@ -402,8 +399,12 @@ void game_system_enemy_update(game_t *game, f32 dt)
 
 
         transform_update(transform);
-        transform_mesh2d_update(transform, mesh);
         transform_boxcollider2d_update(transform, collider);
+        if (collision2d_check_out_of_screen(collider))
+        {
+            entity_destroy(e);
+        }
+        transform_mesh2d_update(transform, mesh);
 
     }
 }
@@ -489,6 +490,8 @@ void game_system_collision(game_t *game, f32 dt)
 
     c_boxcollider2d_t *pbox = (c_boxcollider2d_t *)entity_get_component(player, c_boxcollider2d_t );
     assert(pbox);
+    c_transform_t *ptrans = (c_transform_t *)entity_get_component(player, c_transform_t );
+    assert(ptrans);
 
     list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
     list_t *enemies = entitymanager_get_all_entities_by_tag(manager, ENEMY);
@@ -525,19 +528,18 @@ void game_system_collision(game_t *game, f32 dt)
         entity_t *enemy = *(entity_t **)list_get_element_by_index(enemies, i);
         assert(enemy);
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
+        c_transform_t *etrans = (c_transform_t *)entity_get_component(enemy, c_transform_t );
         if (ebox == NULL) eprint("enemy entity is missing a box collider");
 
-        if (collision2d_check_out_of_screen(ebox))
-        {
-            entity_destroy(enemy);
-            continue;
-        }
 
         if (collision2d_check_collision_by_AABB(ebox, pbox))
         {
             game->points = 0;
             game->ult_ready = false;
             game->ult_active = false;
+
+            etrans->velocity = vec3f(0.0f);
+            ptrans->velocity = vec3f(0.0f);
 
             entity_destroy(enemy);
             game_system_spawn_explosion(game, enemy);
