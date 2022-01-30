@@ -28,25 +28,25 @@ void app_update(application_t *app)
 
     entitymanager_update(&game->manager);
 
-    // spawns 
+    /*// spawns */
     game_system_enemy_spawner(game, dt);
 
-    // enemy update
+    /*// enemy update*/
     game_system_enemy_update(game, dt);
 
-    // player update
+    /*// player update*/
     game_system_player_update(game, dt);
 
-    // bullet update
+    /*// bullet update*/
     game_system_bullet_update(game, dt);
 
-    // collision
+    /*// collision*/
     game_system_collision(game, dt);
 
-    // explosion
+    /*// explosion*/
     game_system_explosion_update(game);
 
-    // ult
+    /*// ult*/
     game_system_ult_update(game);
 }
 

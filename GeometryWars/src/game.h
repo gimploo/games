@@ -213,7 +213,7 @@ void game_system_spawn_ult(game_t *game, entity_t *player)
 
     for (u32 i = 0; i < enemies->len; i++)
     {
-        entity_t *e = *(entity_t **)list_get_element_by_index(enemies, i);
+        entity_t *e = (entity_t *)list_get_element_by_index(enemies, i);
         assert(e);
 
         if (!e->is_alive) continue;
@@ -238,7 +238,7 @@ void game_system_ult_update(game_t *game)
 
     if (ult->len == 0) return;
 
-    entity_t *e = *(entity_t **)list_get_element_by_index(ult, 0);
+    entity_t *e = (entity_t *)list_get_element_by_index(ult, 0);
     assert(e);
 
     c_lifespan_t *cmp = (c_lifespan_t *)entity_get_component(e, c_lifespan_t );
@@ -257,7 +257,8 @@ void game_system_player_update(game_t *game, f32 dt)
 {
     assert(game);
 
-    entity_t *player = game->player; assert(player);
+    entity_t *player = game->player; 
+    assert(player);
 
     c_transform_t *transform        = (c_transform_t *)entity_get_component(player, c_transform_t );
     c_shape2d_t *shape              = (c_shape2d_t *)entity_get_component(player, c_shape2d_t );
@@ -351,7 +352,7 @@ void game_system_bullet_update(game_t *game, f32 dt)
 
     for (u64 i = 0; i < bullets->len; i++)
     {
-        entity_t *e = *(entity_t **)list_get_element_by_index(bullets, i);
+        entity_t *e = (entity_t *)list_get_element_by_index(bullets, i);
 
         // components
         c_transform_t *transform        = (c_transform_t *)entity_get_component(e, c_transform_t );
@@ -387,7 +388,7 @@ void game_system_enemy_update(game_t *game, f32 dt)
 
     for (u64 i = 0; i < enemies->len; i++)
     {
-        entity_t *e = *(entity_t **)list_get_element_by_index(enemies, i);
+        entity_t *e = (entity_t *)list_get_element_by_index(enemies, i);
         assert(e);
 
         // components
@@ -459,7 +460,7 @@ void game_system_explosion_update(game_t *game)
 
     for (u32 i = 0; i < explosions->len; i++)
     {
-        entity_t *e = *(entity_t **)list_get_element_by_index(explosions, i);
+        entity_t *e = (entity_t *)list_get_element_by_index(explosions, i);
         assert(e);
 
         // components
@@ -498,14 +499,14 @@ void game_system_collision(game_t *game, f32 dt)
 
     for (u64 i = 0; i < enemies->len; i++)
     {
-        entity_t *enemy = *(entity_t **)list_get_element_by_index(enemies, i);
+        entity_t *enemy = (entity_t *)list_get_element_by_index(enemies, i);
         assert(enemy);
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
         if (ebox == NULL) eprint("enemy entity is missing a box collider");
 
         for (u64 j = 0; j < bullets->len; j++)
         {
-            entity_t *bullet = *(entity_t **)list_get_element_by_index(bullets, j);
+            entity_t *bullet = (entity_t *)list_get_element_by_index(bullets, j);
             assert(bullet);
             c_boxcollider2d_t *bbox = (c_boxcollider2d_t *)entity_get_component(bullet, c_boxcollider2d_t );
             if (bbox == NULL) eprint("bullet entity is missing a box collider");
@@ -525,7 +526,7 @@ void game_system_collision(game_t *game, f32 dt)
 
     for (u64 i = 0; i < enemies->len; i++)
     {
-        entity_t *enemy = *(entity_t **)list_get_element_by_index(enemies, i);
+        entity_t *enemy = (entity_t *)list_get_element_by_index(enemies, i);
         assert(enemy);
         c_boxcollider2d_t *ebox = (c_boxcollider2d_t *)entity_get_component(enemy, c_boxcollider2d_t );
         c_transform_t *etrans = (c_transform_t *)entity_get_component(enemy, c_transform_t );
