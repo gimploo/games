@@ -1,6 +1,7 @@
 #pragma once
 #include "../lib/ecs/entitymanager.h"
 #include "../lib/ecs/systems.h"
+#include "../lib/font/glfreetypefont.h"
 
 #define MAX_BULLET_SPEED    0.08f
 #define BULLET_SIDE         0.03f
@@ -27,6 +28,7 @@ typedef struct game_t {
     entitymanager_t manager;
 
     s_renderer2d_t renderer;
+    glfreetypefont_t font;
 
     // points
     u8 points;
@@ -115,10 +117,10 @@ void game_system_enemy_spawner(game_t *game, f32 dt)
 
 
     c_transform_t   *transform  = c_transform_init(
-                        enemypos, vec3f_init(ENEMY_SPEED, theta),
+                        enemypos, vec3f_radians(ENEMY_SPEED, theta),
                         0.03f, 0.012f);
 
-    c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_WHITE);
+    c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_BLACK);
     c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
     c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(ENEMY_SIDE));
     c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
@@ -168,7 +170,7 @@ void game_system_spawn_bullet(game_t *game)
 
     c_transform_t *t = c_transform_init(
             playerpos,
-            vec3f_init(MAX_BULLET_SPEED, theta),
+            vec3f_radians(MAX_BULLET_SPEED, theta),
             0.0f, 0.0f);
     assert(t);
 
@@ -431,10 +433,10 @@ void game_system_spawn_explosion(game_t *game, entity_t *enemy)
         entity_t *e = entitymanager_add_entity(manager, ENEMY_EXPLODED);
 
         c_transform_t   *transform  = c_transform_init(
-                            enemypos, vec3f_init(ENEMY_SPEED, theta),
+                            enemypos, vec3f_radians(ENEMY_SPEED, theta),
                             0.03f, 0.032f);
 
-        c_shape2d_t     *shape      = c_shape2d_init(type, ENEMY_SIDE / 2.0f, COLOR_WHITE);
+        c_shape2d_t     *shape      = c_shape2d_init(type, ENEMY_SIDE / 2.0f, COLOR_BLACK);
         c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
         c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
         c_lifespan_t    *lifespan   = c_lifespan_init(30);
