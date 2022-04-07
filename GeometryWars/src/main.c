@@ -94,7 +94,6 @@ int main(void)
     // Run the application
     application_run(&app);
 
-
     //Cleanup
     window_destroy(&win);
 
