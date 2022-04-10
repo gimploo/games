@@ -1,83 +1,94 @@
-#include "../lib/simple/gl_renderer2d.h"
 #include "../lib/application.h"
-#include "../lib/game/2D/collision.h"
+#include "./game.h"
 
-typedef enum {
+#define WINDOW_WIDTH    450
+#define WINDOW_HEIGHT   700
 
-    GAME_MENU,
-    GAME_START,
-    GAME_PAUSE,
-    GAME_PLAYING,
-    GAME_WON,
-    GAME_LOST,
-    GAME_OVER,
-    COUNT
 
-} game_state_type;
-
-typedef struct bird_t {
-
-    vec2f_t          position;
-    f32              speed;
-
-    boxcollider2d_t collider;
-
-    quadf_t         __vertices;
-    quadf_t         __texcoord;
-
-} bird_t;
-
-typedef struct game_t {
-
-    bird_t          player;
-    game_state_type state;
-
-} game_t;
-
-void init(application_t *app )
+void app_init(application_t *app)
 {
+    game_t *game = app->game;
+    game->engine = poggen_init();
+
+    assetmanager_t *assetmanager = &game->engine.assets;
+    assetmanager_add_texture2d(assetmanager, "Spritesheet", "./res/spritesheet.png"); 
+
+    poggen_t *engine = &game->engine;
+    poggen_add_scene(engine, MENU);
+    poggen_add_scene(engine, PLAYERREADY);
+    poggen_add_scene(engine, PLAYING);
+    poggen_add_scene(engine, GAMEOVER);
+
+    engine->current_scene = (scene_t *)map_get_value(&engine->scenes, "MENU");
 
 }
 
-void update(application_t *app)
+void print_scene(void *arg)
 {
-    f32 fps = application_get_fps(app);
-    f32 dt = application_get_dt(app);
+    printf("%s ", ((scene_t *)arg)->label);
+}
+
+void app_update(application_t *app)
+{
+    game_t *game = app->game;
+    poggen_t *engine = &game->engine;
+
+    scene_t *current_scene = engine->current_scene;
+    switch(scene_get_type(current_scene))
+    {
+        case MENU:
+
+        break;
+
+        case PLAYERREADY:
+
+        break;
+
+        case PLAYING:
+
+        break;
+
+        case GAMEOVER:
+            
+        break;
+
+        default: eprint("scene `%s` type not accounted for (%i)", current_scene->label, scene_get_type(current_scene));
+    }
 
 }
 
-void render(application_t *app)
+void app_render(application_t *app)
 {
-    window_t *win = application_get_whandle(app);
+    game_t *game = app->game;
+}
 
-    window_gl_render_begin(win);
+void app_shutdown(application_t *app)
+{
+    game_t *game = app->game;
 
-
-    window_gl_render_end(win);
+    poggen_destroy(&game->engine);
 }
 
 int main(void)
 {
-    window_t win = window_init("Flappy Birds", 700, 800, SDL_INIT_VIDEO);
-    gl_shader_t shader = gl_shader_from_file_init("../res/shader.vs", "../res/shader.fs");
-    gl_texture2d_t texture = gl_texture2d_init("../res/flappy-birds-texture-atlas.png");
-    gl_renderer2d_t renderer = gl_renderer2d_init(&shader, &texture);
+    game_t FlappyBird;
 
-    application_t app = application_init(&win, &renderer);
+    application_t app = {
 
-    app = (application_t ){
-        .init = init,
-        .update = update,
-        .render = render
+        .title      = "Flappy bird",
+        .width      = WINDOW_WIDTH,
+        .height     = WINDOW_HEIGHT,
+        
+        // passing the game
+        .game       = &FlappyBird,
+
+        .init       = app_init,
+        .update     = app_update,
+        .render     = app_render,
+        .shutdown   = app_shutdown
     };
 
     application_run(&app);
 
-
-// Cleanup
-    window_destroy(&win);
-    gl_renderer2d_destroy(&renderer);
-    gl_shader_destroy(&shader);
-    gl_texture2d_destroy(&texture);
-
+    return 0;
 }
