@@ -23,11 +23,6 @@ void app_init(application_t *app)
 
 }
 
-void print_scene(void *arg)
-{
-    printf("%s ", ((scene_t *)arg)->label);
-}
-
 void app_update(application_t *app)
 {
     game_t *game = app->game;
