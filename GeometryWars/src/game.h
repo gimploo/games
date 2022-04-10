@@ -120,7 +120,7 @@ void game_system_enemy_spawner(game_t *game, f32 dt)
                         enemypos, vec3f_radians(ENEMY_SPEED, theta),
                         0.03f, 0.012f);
 
-    c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_BLACK);
+    c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_RED);
     c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
     c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(ENEMY_SIDE));
     c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
@@ -334,12 +334,12 @@ void game_system_player_update(game_t *game, f32 dt)
     if (game->points > 4) {
 
         game->ult_ready = true;
-        shape->fill = COLOR_GREEN;
+        shape->fill = COLOR_BLUE;
 
     } else if (game->points == 0) {
 
         game->ult_ready = false;
-        shape->fill = COLOR_RED;
+        shape->fill = COLOR_WHITE;
     }
 
 }
@@ -436,7 +436,7 @@ void game_system_spawn_explosion(game_t *game, entity_t *enemy)
                             enemypos, vec3f_radians(ENEMY_SPEED, theta),
                             0.03f, 0.032f);
 
-        c_shape2d_t     *shape      = c_shape2d_init(type, ENEMY_SIDE / 2.0f, COLOR_BLACK);
+        c_shape2d_t     *shape      = c_shape2d_init(type, ENEMY_SIDE / 2.0f, COLOR_RED);
         c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
         c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
         c_lifespan_t    *lifespan   = c_lifespan_init(30);

@@ -9,6 +9,8 @@ void app_init(application_t *app)
 {
     assert(app->game);
 
+    application_set_background(app, COLOR_BLACK);
+
     game_t *game    = (game_t *)app->game;
     game->manager   = entitymanager_init(COUNT);
     game->renderer  = s_renderer2d_init();
@@ -27,9 +29,9 @@ void app_update(application_t *app)
     f32 fps         = application_get_fps(app);
 
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "FPS: %f",fps);
+    snprintf(buffer, sizeof(buffer), "FPS: %2.0f",fps);
 
-    glfreetypefont_set_text(&game->font, buffer, (vec2f_t ){0.4f, 0.4f}, vec4f(0.2f));
+    glfreetypefont_set_text(&game->font, buffer, (vec2f_t ){0.8f, 0.8f}, COLOR_WHITE);
 
     entitymanager_update(&game->manager);
 
@@ -81,21 +83,23 @@ int main(void)
 {
     game_t GeometryWar;
 
-    // Setup window
-    window_t win = window_init("Geometry Wars", 700, 800, SDL_INIT_VIDEO);
-    window_set_background(&win, COLOR_WHITE);
-
     // Setup application
-    application_t app = application_init(&win);
+    application_t app = {
+        .title = "GeometryWar",
+        .width = 700,
+        .height = 800,
 
-    // Pass the game to the application
-    application_pass_game(&app, &GeometryWar);
+        .game = &GeometryWar,
+
+        .init = app_init,
+        .update = app_update,
+        .render = app_render,
+        .shutdown = app_shutdown
+    };
 
     // Run the application
     application_run(&app);
 
-    //Cleanup
-    window_destroy(&win);
 
     return 0;
 }
