@@ -19,8 +19,6 @@ void app_init(application_t *app)
     poggen_add_scene(engine, PLAYING);
     poggen_add_scene(engine, GAMEOVER);
 
-    engine->current_scene = (scene_t *)map_get_value(&engine->scenes, "MENU");
-
 }
 
 void app_update(application_t *app)
@@ -50,11 +48,20 @@ void app_update(application_t *app)
         default: eprint("scene `%s` type not accounted for (%i)", current_scene->label, scene_get_type(current_scene));
     }
 
+    poggen_update_scene(engine);
+
 }
 
 void app_render(application_t *app)
 {
     game_t *game = app->game;
+    poggen_t *engine = &game->engine;
+
+    scene_t *current_scene = engine->current_scene;
+    assert(current_scene);
+
+    poggen_render_scene(engine);
+    
 }
 
 void app_shutdown(application_t *app)
