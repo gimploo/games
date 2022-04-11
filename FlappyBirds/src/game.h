@@ -1,6 +1,12 @@
 #pragma once
 #include "../lib/poggen.h"
 
+// scenes
+#include "./scenes/menu.h"
+#include "./scenes/gameover.h"
+#include "./scenes/playing.h"
+#include "./scenes/playerready.h"
+
 
 typedef struct game_t {
 

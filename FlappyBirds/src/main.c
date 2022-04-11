@@ -14,10 +14,11 @@ void app_init(application_t *app)
     assetmanager_add_texture2d(assetmanager, "Spritesheet", "./res/spritesheet.png"); 
 
     poggen_t *engine = &game->engine;
-    poggen_add_scene(engine, MENU);
-    poggen_add_scene(engine, PLAYERREADY);
-    poggen_add_scene(engine, PLAYING);
-    poggen_add_scene(engine, GAMEOVER);
+
+    poggen_add_scene(engine, menu);
+    /*poggen_add_scene(engine, playerready);*/
+    /*poggen_add_scene(engine, playing);*/
+    /*poggen_add_scene(engine, gameover);*/
 
 }
 
@@ -25,28 +26,6 @@ void app_update(application_t *app)
 {
     game_t *game = app->game;
     poggen_t *engine = &game->engine;
-
-    scene_t *current_scene = engine->current_scene;
-    switch(scene_get_type(current_scene))
-    {
-        case MENU:
-
-        break;
-
-        case PLAYERREADY:
-
-        break;
-
-        case PLAYING:
-
-        break;
-
-        case GAMEOVER:
-            
-        break;
-
-        default: eprint("scene `%s` type not accounted for (%i)", current_scene->label, scene_get_type(current_scene));
-    }
 
     poggen_update_scene(engine);
 
