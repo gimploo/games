@@ -10,7 +10,7 @@
 
 typedef struct game_t {
 
-    poggen_t engine;
+    poggen_t *engine;
 
 } game_t ;
 

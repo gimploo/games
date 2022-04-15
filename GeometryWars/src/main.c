@@ -17,7 +17,7 @@ void app_init(application_t *app)
     game->font      = glfreetypefont_init("./res/Roboto-Bold.ttf", 20);
 
     // Setting up player
-    game_system_spawn_player(game, app->__window_handle);
+    game_system_spawn_player(game, application_get_window(app));
 }
 
 void app_update(application_t *app)
@@ -85,9 +85,9 @@ int main(void)
 
     // Setup application
     application_t app = {
-        .title = "GeometryWar",
-        .width = 700,
-        .height = 800,
+        .window_title = "GeometryWar",
+        .window_width = 700,
+        .window_height = 800,
 
         .game = &GeometryWar,
 

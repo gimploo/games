@@ -5,17 +5,19 @@
 
 
 SRC_PATH="./src/main.c"
-EXE_NAME="flappybird"
+EXE_NAME="FlappyBird"
 DEPENDENCIES="libsdl2-dev freetype* libglew-dev"
+
 
 CC="gcc"
 FLAGS="-std=c11 -g -W -Wall -Wextra -Wno-missing-braces -Wno-variadic-macros -rdynamic"
-LINKERS="-lSDL2 -lGLEW -lGLU -lGL -lm"
+LINKERS="-lfreetype -lSDL2 -lGLEW -lGLU -lGL -lm"
+INCLUDES="-I/usr/include/freetype2 "
 
 
 
 # =============================================================================================
-#                            -- IMPLEMENTATION (BELOW) --
+#                            -- IMPLEMENTATION --
 # =============================================================================================
 
 red=$(tput setaf 1)
@@ -40,7 +42,7 @@ function compile_in_linux {
 
     local FILE_PATH="$1"
 
-    $CC $FILE_PATH $FLAGS $LINKERS -o ./bin/$EXE_NAME
+    $CC $FILE_PATH $FLAGS $INCLUDES $LINKERS -o ./bin/$EXE_NAME
 
 }
 
