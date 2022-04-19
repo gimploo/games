@@ -1,0 +1,7 @@
+C:\Users\User\OneDrive\Documents\projects\games\SuperMario\lib\simple\window.h: 	In function 'window_init':
+C:\Users\User\OneDrive\Documents\projects\games\SuperMario\lib\simple\window.h:346: 	[01;31m(000002138B84DE50) ALLOCTED (1696 bytes)[0m
+
+C:\Users\User\OneDrive\Documents\projects\games\SuperMario\lib\simple\window.h: 	In function 'window_destroy':
+C:\Users\User\OneDrive\Documents\projects\games\SuperMario\lib\simple\window.h:794: 	[01;32m(000002138B84DE50) DEALLOCATED  [0m
+
+NO MEMORY LEAKS

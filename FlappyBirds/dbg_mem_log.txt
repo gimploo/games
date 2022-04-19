@@ -1,77 +1,71 @@
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF7253D0) ALLOCTED (512 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\simple\window.h: 	In function 'window_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\simple\window.h:346: 	[01;31m(0000029C9CA04E10) ALLOCTED (1696 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF73B7D0) ALLOCTED (80 bytes)[0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(00000132AF73B830) ALLOCTED (80 bytes)[0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(00000132AF9FC550) ALLOCTED (42640 bytes)[0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(00000132A9C599C0) ALLOCTED (10 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C96ACB5E0) ALLOCTED (512 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF73B230) ALLOCTED (80 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9C924D40) ALLOCTED (80 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(00000132AF73B950) ALLOCTED (80 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(0000029C9C924C20) ALLOCTED (80 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(00000132AFA06BF0) ALLOCTED (42640 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(0000029C9CA07550) ALLOCTED (42640 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(00000132A9C59D60) ALLOCTED (10 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(0000029C9C91A040) ALLOCTED (10 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD64050) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9C924E00) ALLOCTED (80 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(00000132ACD63E40) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(0000029C9C924EC0) ALLOCTED (80 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(00000132ACC14E50) ALLOCTED (17056 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(0000029C9CA12C70) ALLOCTED (42640 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(00000132AF71B970) ALLOCTED (4 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(0000029C9C919CC0) ALLOCTED (10 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63A80) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE6A0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(00000132ACD640E0) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(0000029C99BAE550) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(00000132AFA15F00) ALLOCTED (17056 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(0000029C9CA1E390) ALLOCTED (17056 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(00000132AF71BA70) ALLOCTED (4 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(0000029C9C922A20) ALLOCTED (4 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF73B9B0) ALLOCTED (80 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEDC0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(00000132AF73AC90) ALLOCTED (80 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(0000029C99BAE970) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(00000132AFA1A1B0) ALLOCTED (3680 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(0000029C9CA22E80) ALLOCTED (17056 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(00000132A9C59DA0) ALLOCTED (10 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(0000029C9C922A50) ALLOCTED (4 bytes)[0m
 
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function '__impl_queue_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:99: 	[01;31m(00000132B2122040) ALLOCTED (2400000 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9C924F20) ALLOCTED (80 bytes)[0m
 
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function '__impl_queue_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:99: 	[01;31m(00000132B237B040) ALLOCTED (1600000 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:68: 	[01;31m(0000029C9C924FE0) ALLOCTED (80 bytes)[0m
 
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function '__impl_queue_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:99: 	[01;31m(00000132B2517040) ALLOCTED (2400000 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:69: 	[01;31m(0000029C9CA27130) ALLOCTED (2880 bytes)[0m
+
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:73: 	[01;31m(0000029C9C91A1A0) ALLOCTED (10 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h: 	In function 'poggen_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h:73: 	[01;31m(00000132AF726030) ALLOCTED (512 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h:59: 	[01;31m(0000029C9C786B40) ALLOCTED (200 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_image.h file ignored
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_image.h file ignored
@@ -82,157 +76,157 @@ C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_ima
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_image.h file ignored
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_image.h file ignored
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF738900) ALLOCTED (560 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9CA67D80) ALLOCTED (560 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD643E0) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEA60) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63E10) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEB20) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63B70) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE910) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63F30) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE5E0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63C30) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEC70) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD64110) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEAC0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63A50) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE5B0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD63870) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAEB80) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACD639F0) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE4F0) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132ACC19FC0) ALLOCTED (32 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C99BAE580) ALLOCTED (32 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:69: 	[01;31m(00000132AF915E80) ALLOCTED (64 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9C757B30) ALLOCTED (64 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function '__impl_queue_init':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:99: 	[01;31m(00000132AF73A910) ALLOCTED (800 bytes)[0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:99: 	[01;31m(0000029C96B56EF0) ALLOCTED (800 bytes)[0m
+
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function '__impl_list_init':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:71: 	[01;31m(0000029C9CA67FC0) ALLOCTED (1536 bytes)[0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF73B7D0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9C924D40) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(00000132AF9FC550) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(0000029C9CA07550) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(00000132A9C599C0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(0000029C9C91A040) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(00000132AF73B830) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(0000029C9C924C20) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\external\stb_image.h file ignored
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF73B230) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9C924E00) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(00000132AFA06BF0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(0000029C9CA12C70) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(00000132A9C59D60) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(0000029C9C919CC0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(00000132AF73B950) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(0000029C9C924EC0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD64050) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE6A0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(00000132ACC14E50) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(0000029C9CA1E390) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(00000132AF71B970) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(0000029C9C922A20) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(00000132ACD63E40) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(0000029C99BAE550) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63A80) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEDC0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(00000132AFA15F00) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(0000029C9CA22E80) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(00000132AF71BA70) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(0000029C9C922A50) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(00000132ACD640E0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(0000029C99BAE970) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF7253D0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C96ACB5E0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function 'queue_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:55: 	[01;32m(00000132AF73A910) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:55: 	[01;32m(0000029C96B56EF0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF915E80) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9C757B30) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD643E0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEA60) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63E10) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEB20) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63B70) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE910) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63F30) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE5E0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63C30) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEC70) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD64110) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEAC0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63A50) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE5B0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD63870) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAEB80) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACD639F0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE4F0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132ACC19FC0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C99BAE580) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF738900) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9CA67D80) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:165: 	[01;32m(00000132AF73B9B0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9CA67FC0) DEALLOCATED  [0m
+
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h: 	In function 'list_destroy':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\list.h:167: 	[01;32m(0000029C9C924F20) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(00000132AFA1A1B0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:145: 	[01;32m(0000029C9CA27130) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(00000132A9C59DA0) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:146: 	[01;32m(0000029C9C91A1A0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h: 	In function '__impl_hashtable_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(00000132AF73AC90) DEALLOCATED  [0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function 'queue_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:55: 	[01;32m(00000132B2122040) DEALLOCATED  [0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function 'queue_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:55: 	[01;32m(00000132B237B040) DEALLOCATED  [0m
-
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h: 	In function 'queue_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\queue.h:55: 	[01;32m(00000132B2517040) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\ds\hashtable.h:147: 	[01;32m(0000029C9C924FE0) DEALLOCATED  [0m
 
 C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h: 	In function 'poggen_destroy':
-C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h:144: 	[01;32m(00000132AF726030) DEALLOCATED  [0m
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\poggen.h:162: 	[01;32m(0000029C9C786B40) DEALLOCATED  [0m
+
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\simple\window.h: 	In function 'window_destroy':
+C:\Users\User\OneDrive\Documents\projects\games\FlappyBirds\lib\simple\window.h:794: 	[01;32m(0000029C9CA04E10) DEALLOCATED  [0m
 
 NO MEMORY LEAKS

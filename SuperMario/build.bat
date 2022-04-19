@@ -27,7 +27,7 @@ set DEPENDENCY_DEFAULT_PATH=.\external
 
 REM Source files and exe name
 set SRC_FILE_NAME=main.c
-set EXE_FILE_NAME=GeometryWars.exe
+set EXE_FILE_NAME=SuperMario.exe
 
 
 

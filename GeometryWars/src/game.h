@@ -26,9 +26,10 @@ typedef struct game_t {
 
     entity_t        *player;
     entitymanager_t manager;
+    assetmanager_t  assets;
 
     s_renderer2d_t renderer;
-    glfreetypefont_t font;
+    glfreetypefont_t *font;
 
     // points
     u8 points;
@@ -49,15 +50,15 @@ void game_system_spawn_player(game_t *game, window_t *win)
 
     entity_t        *player     = entitymanager_add_entity(&game->manager, PLAYER);
 
-    c_transform_t   *transform  = c_transform_init(
+    c_transform_t   transform  = c_transform(
                                         vec3f(0.0f), vec3f(0.0f),
                                         0.02f, 0.012f);
 
-    c_shape2d_t     *shape      = c_shape2d_init(SQUARE, PLAYER_SIDE, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
-    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
-    c_input_t       *input      = c_input_init(win);
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(PLAYER_SIDE));
-    c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
+    c_shape2d_t     shape      = c_shape2d(SQUARE, PLAYER_SIDE, ((vec4f_t ){1.0f, 0.2f, 0.0f, 1.0f}));
+    c_shader_t      shader     = c_shader(&game->assets, "Default");
+    c_input_t       input      = c_input(win);
+    c_boxcollider2d_t collider = c_boxcollider2d(vec2f(PLAYER_SIDE));
+    c_mesh2d_t      mesh       = c_mesh2d(transform.position, shape.type, shape.radius);
 
     entity_add_component(player, transform,     c_transform_t );
     entity_add_component(player, shape,         c_shape2d_t );
@@ -116,14 +117,14 @@ void game_system_enemy_spawner(game_t *game, f32 dt)
 
 
 
-    c_transform_t   *transform  = c_transform_init(
+    c_transform_t   transform  = c_transform(
                         enemypos, vec3f_radians(ENEMY_SPEED, theta),
                         0.03f, 0.012f);
 
-    c_shape2d_t     *shape      = c_shape2d_init((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_RED);
-    c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
-    c_boxcollider2d_t *collider = c_boxcollider2d_init(vec2f(ENEMY_SIDE));
-    c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
+    c_shape2d_t     shape      = c_shape2d((c_shape_type)randint(0, CIRCLE), ENEMY_SIDE, COLOR_RED);
+    c_shader_t      shader     = c_shader(&game->assets, "Default");
+    c_boxcollider2d_t collider = c_boxcollider2d(vec2f(ENEMY_SIDE));
+    c_mesh2d_t      mesh       = c_mesh2d(transform.position, shape.type, shape.radius);
 
     entity_add_component(enemy, transform,     c_transform_t );
     entity_add_component(enemy, shape,         c_shape2d_t );
@@ -168,26 +169,20 @@ void game_system_spawn_bullet(game_t *game)
 
     f32 theta = atan2(distancevec.cmp[Y], distancevec.cmp[X]);
 
-    c_transform_t *t = c_transform_init(
+    c_transform_t t = c_transform(
             playerpos,
             vec3f_radians(MAX_BULLET_SPEED, theta),
             0.0f, 0.0f);
-    assert(t);
 
-    c_shape2d_t *shape = c_shape2d_init(CIRCLE, BULLET_SIDE, COLOR_CYAN);
-    assert(shape);
+    c_shape2d_t shape = c_shape2d(CIRCLE, BULLET_SIDE, COLOR_CYAN);
 
-    c_boxcollider2d_t *box = c_boxcollider2d_init(vec2f(BULLET_SIDE));
-    assert(box);
+    c_boxcollider2d_t box = c_boxcollider2d(vec2f(BULLET_SIDE));
 
-    c_shader_t *shader = c_shader_init("./res/bullet.vs", "./res/bullet.fs");
-    assert(shader);
+    c_shader_t shader = c_shader(&game->assets, "Default");
 
-    c_lifespan_t *life = c_lifespan_init(40);
-    assert(life);
+    c_lifespan_t life = c_lifespan(40);
 
-    c_mesh2d_t *mesh = c_mesh2d_init(t->position, shape->type, shape->radius);
-    assert(mesh);
+    c_mesh2d_t mesh = c_mesh2d(t.position, shape.type, shape.radius);
 
     entity_add_component(bullet, t, c_transform_t );
     entity_add_component(bullet, shape, c_shape2d_t );
@@ -207,10 +202,10 @@ void game_system_spawn_ult(game_t *game, entity_t *player)
     if (game->ult_active == true) return;
 
     entity_t *ult        = entitymanager_add_entity(&game->manager, ULT);
-    c_lifespan_t *life  = c_lifespan_init(40);
+    c_lifespan_t life  = c_lifespan(40);
     entity_add_component(ult, life, c_lifespan_t );
 
-    list_t *enemies = entitymanager_get_all_entities_by_tag(&game->manager, ENEMY);
+    list_t *enemies = entitymanager_get_entities_by_tag(&game->manager, ENEMY);
     assert(enemies);
 
     for (u32 i = 0; i < enemies->len; i++)
@@ -235,7 +230,7 @@ void game_system_ult_update(game_t *game)
 {
     assert(game);
 
-    list_t *ult = entitymanager_get_all_entities_by_tag(&game->manager, ULT);
+    list_t *ult = entitymanager_get_entities_by_tag(&game->manager, ULT);
     assert(ult);
 
     if (ult->len == 0) return;
@@ -320,7 +315,7 @@ void game_system_player_update(game_t *game, f32 dt)
     } else bulletrate++;
 
 
-    transform_update(transform);
+    transform->update(transform);
     transform_boxcollider2d_update(transform, collider);
     if (collision2d_check_out_of_screen(collider))
     {
@@ -349,7 +344,7 @@ void game_system_bullet_update(game_t *game, f32 dt)
     entitymanager_t *manager = &game->manager; assert(manager);
     assert(manager);
 
-    list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
+    list_t *bullets = entitymanager_get_entities_by_tag(manager, BULLET);
     assert(bullets);
 
     for (u64 i = 0; i < bullets->len; i++)
@@ -371,7 +366,7 @@ void game_system_bullet_update(game_t *game, f32 dt)
             shape->fill.cmp[3] -= 0.02f;
 
 
-        transform_update(transform);
+        transform->update(transform);
         transform_boxcollider2d_update(transform, collider);
         transform_mesh2d_update(transform, mesh);
 
@@ -385,7 +380,7 @@ void game_system_enemy_update(game_t *game, f32 dt)
     entitymanager_t *manager = &game->manager;
     assert(manager);
 
-    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, ENEMY);
+    list_t *enemies = entitymanager_get_entities_by_tag(manager, ENEMY);
     assert(enemies);
 
     for (u64 i = 0; i < enemies->len; i++)
@@ -401,7 +396,7 @@ void game_system_enemy_update(game_t *game, f32 dt)
         c_shader_t *shader              = (c_shader_t *)entity_get_component(e, c_shader_t );
 
 
-        transform_update(transform);
+        transform->update(transform);
         transform_boxcollider2d_update(transform, collider);
         if (collision2d_check_out_of_screen(collider))
         {
@@ -432,14 +427,14 @@ void game_system_spawn_explosion(game_t *game, entity_t *enemy)
 
         entity_t *e = entitymanager_add_entity(manager, ENEMY_EXPLODED);
 
-        c_transform_t   *transform  = c_transform_init(
+        c_transform_t   transform  = c_transform(
                             enemypos, vec3f_radians(ENEMY_SPEED, theta),
                             0.03f, 0.032f);
 
-        c_shape2d_t     *shape      = c_shape2d_init(type, ENEMY_SIDE / 2.0f, COLOR_RED);
-        c_shader_t      *shader     = c_shader_init("./res/player.vs", "./res/player.fs");
-        c_mesh2d_t      *mesh       = c_mesh2d_init(transform->position, shape->type, shape->radius);
-        c_lifespan_t    *lifespan   = c_lifespan_init(30);
+        c_shape2d_t     shape      = c_shape2d(type, ENEMY_SIDE / 2.0f, COLOR_RED);
+        c_shader_t      shader     = c_shader(&game->assets, "Default");
+        c_mesh2d_t      mesh       = c_mesh2d(transform.position, shape.type, shape.radius);
+        c_lifespan_t    lifespan   = c_lifespan(30);
 
         entity_add_component(e, transform,     c_transform_t );
         entity_add_component(e, shape,         c_shape2d_t );
@@ -457,7 +452,7 @@ void game_system_explosion_update(game_t *game)
     entitymanager_t *manager = &game->manager;
     assert(manager);
 
-    list_t *explosions = entitymanager_get_all_entities_by_tag(manager, ENEMY_EXPLODED);
+    list_t *explosions = entitymanager_get_entities_by_tag(manager, ENEMY_EXPLODED);
     assert(explosions);
 
     for (u32 i = 0; i < explosions->len; i++)
@@ -477,7 +472,7 @@ void game_system_explosion_update(game_t *game)
         else
             shape->fill.cmp[3] -= 0.02f;
 
-        transform_update(transform);
+        transform->update(transform);
         transform_mesh2d_update(transform, mesh);
         lifespan->update(lifespan, 1);
 
@@ -496,8 +491,8 @@ void game_system_collision(game_t *game, f32 dt)
     c_transform_t *ptrans = (c_transform_t *)entity_get_component(player, c_transform_t );
     assert(ptrans);
 
-    list_t *bullets = entitymanager_get_all_entities_by_tag(manager, BULLET);
-    list_t *enemies = entitymanager_get_all_entities_by_tag(manager, ENEMY);
+    list_t *bullets = entitymanager_get_entities_by_tag(manager, BULLET);
+    list_t *enemies = entitymanager_get_entities_by_tag(manager, ENEMY);
 
     for (u64 i = 0; i < enemies->len; i++)
     {
