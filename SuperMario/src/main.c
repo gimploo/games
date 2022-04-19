@@ -9,6 +9,8 @@ void app_init(application_t *app)
 
 void app_update(application_t *app)
 {
+    window_t *win = application_get_window(app);
+    window_update_user_input(win);
 }
 
 void app_render(application_t *app)
@@ -27,7 +29,7 @@ int main(void)
         .window_height  = WINDOW_HEIGHT,
         .window_title   = "SuperMario",
 
-        .game       = NULL,
+        .content    = NULL,
 
         .init       = app_init,
         .update     = app_update,
