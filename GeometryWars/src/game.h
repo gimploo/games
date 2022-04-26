@@ -1,7 +1,7 @@
 #pragma once
-#include "../lib/ecs/entitymanager.h"
-#include "../lib/ecs/systems.h"
-#include "../lib/font/glfreetypefont.h"
+#include <poglib/ecs/entitymanager.h>
+#include <poglib/ecs/systems.h>
+#include <poglib/font/glfreetypefont.h>
 
 #define MAX_BULLET_SPEED    0.08f
 #define BULLET_SIDE         0.03f

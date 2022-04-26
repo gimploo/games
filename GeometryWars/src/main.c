@@ -1,6 +1,6 @@
-#include "../lib/application.h"
-#include "../lib/ecs/entitymanager.h"
-#include "../lib/ecs/systems.h"
+#include <poglib/application.h>
+#include <poglib/ecs/entitymanager.h>
+#include <poglib/ecs/systems.h>
 
 #include "game.h"
 
@@ -105,7 +105,7 @@ int main(void)
         .init = app_init,
         .update = app_update,
         .render = app_render,
-        .shutdown = app_shutdown
+        .destroy = app_shutdown
     };
 
     // Run the application
