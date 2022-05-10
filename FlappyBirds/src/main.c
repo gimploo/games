@@ -1,4 +1,4 @@
-#include "../lib/application.h"
+#include <poglib/application.h>
 #include "./game.h"
 
 #define WINDOW_WIDTH    450
@@ -25,8 +25,10 @@ void app_update(application_t *app)
 {
     game_t *game = app->game;
     poggen_t *engine = game->engine;
+    scene_t *scene = engine->current_scene;
 
-    poggen_update_currentscene(engine);
+    poggen_update(engine);
+    /*printf("current scene %s\n", scene->label); */
 
 }
 
@@ -35,7 +37,7 @@ void app_render(application_t *app)
     game_t *game = app->game;
     poggen_t *engine = game->engine;
 
-    poggen_render_currentscene(engine);
+    poggen_render(engine);
     
 }
 
@@ -62,7 +64,7 @@ int main(void)
         .init       = app_init,
         .update     = app_update,
         .render     = app_render,
-        .shutdown   = app_shutdown
+        .destroy    = app_shutdown
     };
 
     application_run(&app);

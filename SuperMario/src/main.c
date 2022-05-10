@@ -1,40 +1,59 @@
-#include "../lib/application.h"
+#include <poglib/application.h>
+#include <poglib/poggen.h>
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 700
+#include "./scenes/menu.h"
+
+typedef struct SuperMario {
+    poggen_t *engine;
+} SuperMario;
 
 void app_init(application_t *app)
 {
+    SuperMario *game = app->game;
+    game->engine = poggen_init();
+
+    poggen_add_scene(game->engine, menu);
+
 }
 
 void app_update(application_t *app)
 {
-    window_t *win = application_get_window(app);
-    window_update_user_input(win);
+    SuperMario *game = app->game;
+
+    poggen_update(game->engine);
 }
 
 void app_render(application_t *app)
 {
+    SuperMario *game = app->game;
+
+    poggen_render(game->engine);
 }
 
 void app_destroy(application_t *app)
 {
+    SuperMario *game = app->game;
+    poggen_destroy(game->engine);
 }
 
 int main(void)
 {
-    application_t app = {
+    application_t app = {0};
 
-        .window_width   = WINDOW_WIDTH,
-        .window_height  = WINDOW_HEIGHT,
+    SuperMario game = {0};
+
+    app = (application_t ){
+
+        .window_width   = 800,
+        .window_height  = 700,
         .window_title   = "SuperMario",
 
-        .content    = NULL,
+        .game           = &game,
 
         .init       = app_init,
         .update     = app_update,
         .render     = app_render,
-        .shutdown   = app_destroy
+        .destroy    = app_destroy
     };
 
     application_run(&app);

@@ -1,5 +1,5 @@
 #pragma once
-#include "../lib/poggen.h"
+#include <poglib/poggen.h>
 
 // scenes
 #include "./scenes/menu.h"
