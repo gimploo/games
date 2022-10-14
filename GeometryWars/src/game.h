@@ -28,8 +28,9 @@ typedef struct game_t {
     entitymanager_t manager;
     assetmanager_t  assets;
 
-    s_renderer2d_t renderer;
-    glfreetypefont_t *font;
+    s_renderer2d_t      renderer;
+    glfreetypefont_t    *font;
+    gltext_t            text;
 
     // points
     u8 points;
@@ -307,7 +308,7 @@ void game_system_player_update(game_t *game, f32 dt)
     static f32 bulletrate = 0.0f;
     if (bulletrate >= 6.0f) {
 
-        if (window_mouse_button_just_pressed(win))  {
+        if (window_mouse_button_just_pressed(win, SDL_MOUSEBUTTON_LEFT))  {
             game_system_spawn_bullet(game);
             bulletrate = 0.0f;
         }
