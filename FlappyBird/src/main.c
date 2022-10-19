@@ -11,13 +11,22 @@ typedef struct game_t {
 
 void FlappyBird_init(application_t *app) 
 {
-    game_t cont = {
+    game_t game = {
         .engine = poggen_init()
     };
 
-    poggen_add_scene(&cont.engine, gameplay);
+    //scenes
+    poggen_add_scene(game.engine, gameplay);
 
-    application_pass_content(app, &cont);
+    //common assets
+    assetmanager_add_texture2d(
+            &game.engine->assets, "background", "res/background.png");
+    assetmanager_add_texture2d(
+            &game.engine->assets, "ground", "res/ground.png");
+    assetmanager_add_shader(
+            &game.engine->assets, "shader", "res/common.vs", "res/common.fs");
+
+    application_pass_content(app, &game);
 }
 
 void FlappyBird_update(application_t *app) 
