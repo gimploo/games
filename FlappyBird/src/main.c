@@ -33,8 +33,9 @@ void FlappyBird_update(application_t *app)
 {
     window_t *win = application_get_window(app);
     game_t *c = application_get_content(app);
+    const f32 dt = application_get_dt(app);
 
-    poggen_update(c->engine);
+    poggen_update(c->engine, dt);
 }
 
 void FlappyBird_render(application_t *app) 
