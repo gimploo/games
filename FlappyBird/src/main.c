@@ -23,6 +23,8 @@ void FlappyBird_init(application_t *app)
             &game.engine->assets, "background", "res/background.png");
     assetmanager_add_texture2d(
             &game.engine->assets, "ground", "res/ground.png");
+    assetmanager_add_texture2d(
+            &game.engine->assets, "bird", "res/bird.png");
     assetmanager_add_shader(
             &game.engine->assets, "shader", "res/common.vs", "res/common.fs");
 
