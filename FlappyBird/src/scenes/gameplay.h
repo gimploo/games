@@ -17,7 +17,7 @@ typedef struct sgameplay_t {
     f32     jump_factor;
     f32     gravity;
 
-    matrix4f_t  bird_rect;
+    quadf_t bird_rect;
 
 } sgameplay_t;
 
@@ -35,13 +35,13 @@ void gameplay_init(scene_t *scene)
         .jump_factor = 7.f,
         .gravity = 0.3f,
 
-        .bird_rect = quadf_to_matrix4f(quadf((vec3f_t ){-0.8f, 0.0f, 0.0f}, 0.6f, 0.4f)),
+        .bird_rect = quadf((vec3f_t ){-0.8f, 0.0f, 0.0f}, 0.6f, 0.4f),
     };
     scene_pass_content(scene, &c, sizeof(c));
 
     scene_register_action(
             scene, 
-            action("JUMP", ACTION_KB_JUSTPRESSED, SDLK_SPACE)); 
+            action("JUMP", ACTION_TYPE_JUSTPRESSED, SDLK_SPACE)); 
 
 }
 
