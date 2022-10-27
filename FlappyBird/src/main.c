@@ -15,9 +15,6 @@ void FlappyBird_init(application_t *app)
         .engine = poggen_init()
     };
 
-    //scenes
-    poggen_add_scene(game.engine, gameplay);
-
     //common assets
     assetmanager_add_texture2d(
             &game.engine->assets, "background", "res/background.png");
@@ -25,8 +22,13 @@ void FlappyBird_init(application_t *app)
             &game.engine->assets, "ground", "res/ground.png");
     assetmanager_add_texture2d(
             &game.engine->assets, "bird", "res/bird.png");
+    assetmanager_add_texture2d(
+            &game.engine->assets, "pipe", "res/pipe.png");
     assetmanager_add_shader(
             &game.engine->assets, "shader", "res/common.vs", "res/common.fs");
+
+    //scenes
+    poggen_add_scene(game.engine, gameplay);
 
     application_pass_content(app, &game);
 }

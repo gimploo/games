@@ -13,11 +13,18 @@ typedef struct sgameplay_t {
         } value;
     } scroll;
 
-    vec3f_t pos;
-    f32     jump_factor;
-    f32     gravity;
+    vec3f_t             pos;
+    f32                 jump_factor;
+    f32                 gravity;
+    const glshader_t    *shader;
+    quadf_t             bird_rect;
 
-    quadf_t bird_rect;
+    struct {
+        const gltexture2d_t *image;
+        f32                 timer;
+        queue_t             rects;
+        glbatch_t           batch;
+    } pipes;
 
 } sgameplay_t;
 
@@ -35,7 +42,16 @@ void gameplay_init(scene_t *scene)
         .jump_factor = 7.f,
         .gravity = 0.3f,
 
+        .shader = assetmanager_get_shader(
+                    &scene_get_engine()->assets, "shader"),
         .bird_rect = quadf((vec3f_t ){-0.8f, 0.0f, 0.0f}, 0.6f, 0.4f),
+        .pipes = {
+            .image = assetmanager_get_texture2d(
+                    &scene_get_engine()->assets, "pipe"),
+            .timer = 0,
+            .rects = queue_init(10, quadf_t ),
+            .batch = glbatch_init(10, glquad_t ) 
+        }
     };
     scene_pass_content(scene, &c, sizeof(c));
 
@@ -48,7 +64,7 @@ void gameplay_init(scene_t *scene)
 void gameplay_update(scene_t *scene) 
 {
     sgameplay_t *c = (sgameplay_t *)scene->content;
-    f32 dt = scene->dt;
+    const f32 dt = scene->dt;
     assert(c);
 
     //parallex scroll
@@ -69,37 +85,37 @@ void gameplay_update(scene_t *scene)
             c->pos.y = 0.0f;
     } 
 
-    /*animation
+    // pipes
     {
-        if (c->animation.bird_jump) {
-            matrix4f_t mat = matrix4f_rotate(
-                    MATRIX4F_IDENTITY, 
-                    radians(10.f), 
-                    (vec3f_t ){0.0f, 0.0f, 1.0f});
-            
-            c->bird_rect = matrix4f_multiply(
-                                mat, 
-                                quadf_to_matrix4f(
-                                    quadf(
-                                        (vec3f_t ){c->pos.x, c->pos.y, 0.0f}, 
-                                        0.6f, 
-                                        0.4f)));
-            c->animation.bird_jump = false;
-        } else {
-            matrix4f_t mat = matrix4f_rotate(
-                    MATRIX4F_IDENTITY, 
-                    radians(10.f), 
-                    (vec3f_t ){0.0f, 0.0f, -1.0f});
-            c->bird_rect = matrix4f_multiply(
-                                mat, 
-                                quadf_to_matrix4f(
-                                    quadf(
-                                        (vec3f_t ){c->pos.x, c->pos.y, 0.0f}, 
-                                        0.6f, 
-                                        0.4f)));
+        c->pipes.timer += dt;
+        if (c->pipes.timer > 2)
+        {
+            const f32 pwidth = 0.3f;
+            const f32 pheight = 0.6f;
+            queue_clear(&c->pipes.rects); 
+            const quadf_t quad = quadf(
+                                    (vec3f_t ) {
+                                        pwidth , 
+                                        -0.9f + pheight, 
+                                        0.0f
+                                    }, 
+                                    pwidth, 
+                                    pheight);
+            queue_put(&c->pipes.rects, quad);
+            c->pipes.timer = 0;
+        }
+
+        glbatch_clear(&c->pipes.batch);
+        queue_iterator(&c->pipes.rects, iter)
+        {
+            glquad_t quad = glquad(
+                                *(quadf_t *)iter, 
+                                COLOR_NEUTRAL, 
+                                quadf(vec3f(0.0f), 1.0f, 1.0f)
+                            );
+            glbatch_put(&c->pipes.batch, quad);
         }
     }
-    */
 
 }
 
@@ -117,9 +133,18 @@ void gameplay_render(scene_t *scene)
     const poggen_t *pog   = scene_get_engine();
     sgameplay_t *c  = (sgameplay_t *)scene->content;
 
+    if (!glbatch_is_empty(&c->pipes.batch))
+        glrenderer2d_draw_from_batch(
+            &(glrenderer2d_t ) {
+                .shader = c->shader,
+                .texture = c->pipes.image
+            },
+            &c->pipes.batch
+        );
+
     glrenderer2d_draw_quad(
         &(glrenderer2d_t ) {
-            .shader     = assetmanager_get_shader(&pog->assets, "shader"),
+            .shader     = c->shader,
             .texture    = assetmanager_get_texture2d(&pog->assets, "bird")
         },
         glquad(
@@ -131,7 +156,7 @@ void gameplay_render(scene_t *scene)
 
     glrenderer2d_draw_quad(
         &(glrenderer2d_t ) {
-            .shader     = assetmanager_get_shader(&pog->assets, "shader"),
+            .shader     = c->shader,
             .texture    = assetmanager_get_texture2d(&pog->assets, "ground")
         },
         glquad(
@@ -143,7 +168,7 @@ void gameplay_render(scene_t *scene)
 
     glrenderer2d_draw_quad(
         &(glrenderer2d_t ) {
-            .shader     = assetmanager_get_shader(&pog->assets, "shader"),
+            .shader     = c->shader,
             .texture    = assetmanager_get_texture2d(&pog->assets, "background")
         },
         glquad(
@@ -159,4 +184,6 @@ void gameplay_destroy(scene_t *scene)
 {
     sgameplay_t *c = (sgameplay_t *)scene->content;
 
+    glbatch_destroy(&c->pipes.batch);
+    queue_destroy(&c->pipes.rects);
 }
