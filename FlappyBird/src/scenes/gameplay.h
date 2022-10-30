@@ -20,13 +20,64 @@ typedef struct sgameplay_t {
     quadf_t             bird_rect;
 
     struct {
+        const f32 scroll;
+        const f32 width;
+        const f32 height;
         const gltexture2d_t *image;
         f32                 timer;
-        queue_t             rects;
-        glbatch_t           batch;
+        list_t              positions;
+        struct {
+            queue_t             rects;
+            glbatch_t           batch;
+        } __glcache;
     } pipes;
 
 } sgameplay_t;
+
+void pipes_update(sgameplay_t *game, const f32 dt)
+{
+    list_t *pipes = &game->pipes.positions;
+
+    u32 indexs[20] = {0};
+    i32 count = -1;
+
+    queue_clear(&game->pipes.__glcache.rects); 
+    list_iterator(pipes, iter)
+    {
+        vec2f_t *vec = (vec2f_t *)iter;
+        vec->x += -game->pipes.scroll * dt;
+
+        if (vec->x < -(1.0f + game->pipes.width)) {
+            indexs[++count] = (u64)index;
+            continue;
+        }
+
+        const quadf_t quad = quadf(
+                                (vec3f_t ) {
+                                    vec->x , 
+                                    vec->y, 
+                                    0.0f
+                                }, 
+                                game->pipes.width, 
+                                -1.0f * (-0.9f - vec->y));
+        queue_put(&game->pipes.__glcache.rects, quad);
+    }
+
+    for (int i = 0; i < count; i++)
+        list_delete(&game->pipes.positions, indexs[i]);
+
+
+    glbatch_clear(&game->pipes.__glcache.batch);
+    queue_iterator(&game->pipes.__glcache.rects, iter)
+    {
+        glquad_t quad = glquad(
+                            *(quadf_t *)iter, 
+                            COLOR_NEUTRAL, 
+                            quadf(vec3f(0.0f), 1.0f, 1.0f)
+                        );
+        glbatch_put(&game->pipes.__glcache.batch, quad);
+    }
+}
 
 void gameplay_init(scene_t *scene) 
 {
@@ -46,11 +97,18 @@ void gameplay_init(scene_t *scene)
                     &scene_get_engine()->assets, "shader"),
         .bird_rect = quadf((vec3f_t ){-0.8f, 0.0f, 0.0f}, 0.6f, 0.4f),
         .pipes = {
+            .scroll = 0.2f,
+            .width = 0.3f,
+            .height = 0.6f,
             .image = assetmanager_get_texture2d(
                     &scene_get_engine()->assets, "pipe"),
             .timer = 0,
-            .rects = queue_init(10, quadf_t ),
-            .batch = glbatch_init(10, glquad_t ) 
+            .positions = list_init(vec2f_t ),
+            .__glcache = {
+
+                .rects = queue_init(10, quadf_t ),
+                .batch = glbatch_init(10, glquad_t ) 
+            }
         }
     };
     scene_pass_content(scene, &c, sizeof(c));
@@ -60,6 +118,7 @@ void gameplay_init(scene_t *scene)
             action("JUMP", ACTION_TYPE_JUSTPRESSED, SDLK_SPACE)); 
 
 }
+
 
 void gameplay_update(scene_t *scene) 
 {
@@ -88,36 +147,18 @@ void gameplay_update(scene_t *scene)
     // pipes
     {
         c->pipes.timer += dt;
-        if (c->pipes.timer > 2)
+        if (c->pipes.timer > 4)
         {
-            const f32 pwidth = 0.3f;
-            const f32 pheight = 0.6f;
-            queue_clear(&c->pipes.rects); 
-            const quadf_t quad = quadf(
-                                    (vec3f_t ) {
-                                        pwidth , 
-                                        -0.9f + pheight, 
-                                        0.0f
-                                    }, 
-                                    pwidth, 
-                                    pheight);
-            queue_put(&c->pipes.rects, quad);
+            const i32 val = -randint(30, 100);
+            const vec2f_t vec = { 1.0f, (f32 )val/100.0f };
+            list_append(&c->pipes.positions, vec);
             c->pipes.timer = 0;
         }
-
-        glbatch_clear(&c->pipes.batch);
-        queue_iterator(&c->pipes.rects, iter)
-        {
-            glquad_t quad = glquad(
-                                *(quadf_t *)iter, 
-                                COLOR_NEUTRAL, 
-                                quadf(vec3f(0.0f), 1.0f, 1.0f)
-                            );
-            glbatch_put(&c->pipes.batch, quad);
-        }
+        pipes_update(c, dt);
     }
 
 }
+
 
 void gameplay_input(scene_t *scene, const action_t action) 
 {
@@ -133,13 +174,13 @@ void gameplay_render(scene_t *scene)
     const poggen_t *pog   = scene_get_engine();
     sgameplay_t *c  = (sgameplay_t *)scene->content;
 
-    if (!glbatch_is_empty(&c->pipes.batch))
+    if (!glbatch_is_empty(&c->pipes.__glcache.batch))
         glrenderer2d_draw_from_batch(
             &(glrenderer2d_t ) {
                 .shader = c->shader,
                 .texture = c->pipes.image
             },
-            &c->pipes.batch
+            &c->pipes.__glcache.batch
         );
 
     glrenderer2d_draw_quad(
@@ -184,6 +225,7 @@ void gameplay_destroy(scene_t *scene)
 {
     sgameplay_t *c = (sgameplay_t *)scene->content;
 
-    glbatch_destroy(&c->pipes.batch);
-    queue_destroy(&c->pipes.rects);
+    glbatch_destroy(&c->pipes.__glcache.batch);
+    queue_destroy(&c->pipes.__glcache.rects);
+    list_destroy(&c->pipes.positions);
 }
