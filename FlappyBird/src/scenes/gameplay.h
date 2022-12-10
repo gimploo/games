@@ -26,6 +26,7 @@ typedef struct sgameplay_t {
         const gltexture2d_t *image;
         f32                 timer;
         list_t              positions;
+        list_t              uvs;
         struct {
             queue_t             rects;
             glbatch_t           batch;
@@ -59,7 +60,8 @@ void pipes_update(sgameplay_t *game, const f32 dt)
                                     0.0f
                                 }, 
                                 game->pipes.width, 
-                                -1.0f * (-0.9f - vec->y));
+                                vec->y < 0.0f ? 
+                                    -1.0f * (-0.9f - vec->y) : -1.0f * (1.0f - vec->y));
         queue_put(&game->pipes.__glcache.rects, quad);
     }
 
@@ -104,6 +106,7 @@ void gameplay_init(scene_t *scene)
                     &scene_get_engine()->assets, "pipe"),
             .timer = 0,
             .positions = list_init(vec2f_t ),
+            .uvs       = list_init(quadf_t ),
             .__glcache = {
 
                 .rects = queue_init(10, quadf_t ),
@@ -147,10 +150,20 @@ void gameplay_update(scene_t *scene)
     // pipes
     {
         c->pipes.timer += dt;
-        if (c->pipes.timer > 4)
+        static bool isdown = false;
+        if (c->pipes.timer > 2)
         {
-            const i32 val = -randint(30, 100);
-            const vec2f_t vec = { 1.0f, (f32 )val/100.0f };
+            isdown = !isdown;
+            const f32 val = (f32) randint(10, 40) / 100.0f;
+
+            vec2f_t vec = {0};
+            quadf_t uv = {0};
+            if (isdown)    {
+                vec = (vec2f_t ){ 1.0f, -val};
+            } else {
+                vec = (vec2f_t ) { 1.0f, val};
+            }
+
             list_append(&c->pipes.positions, vec);
             c->pipes.timer = 0;
         }
@@ -228,4 +241,5 @@ void gameplay_destroy(scene_t *scene)
     glbatch_destroy(&c->pipes.__glcache.batch);
     queue_destroy(&c->pipes.__glcache.rects);
     list_destroy(&c->pipes.positions);
+    list_destroy(&c->pipes.uvs);
 }
