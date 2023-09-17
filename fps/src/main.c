@@ -1,6 +1,7 @@
 #define WINDOW_SDL
 #include <poglib/application.h>
 #include <poglib/poggen.h>
+
 #include "scenes/menu.h"
 
 #define WINDOW_WIDTH    1080

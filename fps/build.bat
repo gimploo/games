@@ -129,6 +129,12 @@ REM                            v
                 %LIBRARY_DEFAULT_PATH%\SDL2\lib\x64\SDL2main.lib ^
                 Opengl32.lib glu32.lib
 
+    if "%~1" == "debug" (
+        echo [!] PREPROCESSOR FILE CREATED!!
+        %CC% %CC_DEFAULT_FLAGS% %FLAGS%^
+            /P %INCLUDES% %SRC_FOLDER_DEFAULT_PATH%\%SRC_FILE_NAME% || echo [!] Failed to preprocess! && exit /b 1
+    )
+
     %CC% %CC_DEFAULT_FLAGS% %FLAGS%^
         %INCLUDES% ^
         /Fe%EXE_FOLDER_DEFAULT_PATH%\%EXE_FILE_NAME% ^
