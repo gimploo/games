@@ -16,7 +16,7 @@ set POGLIB_URL=https://github.com/gimploo/poglib/archive/refs/heads/main.zip
 
 REM Include compiler of choice (here its msvc)
 set CC=cl
-set CC_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+set CC_PATH="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 set CC_DEFAULT_FLAGS=/std:c11 /W4 /wd4244 /wd4996 /wd4477 /wd4267 /FC /TC /Zi 
 set CC_DEFAULT_LIBS=User32.lib Gdi32.lib Shell32.lib winmm.lib dbghelp.lib shlwapi.lib
 
@@ -117,6 +117,9 @@ REM                            v
 
     if "%~1" == "debug" (
         set FLAGS=/DGLEW_STATIC /DDEBUG
+        echo [!] PREPROCESSOR FILE CREATED!!
+        %CC% %CC_DEFAULT_FLAGS% %FLAGS%^
+        /P %INCLUDES% %SRC_FOLDER_DEFAULT_PATH%\%SRC_FILE_NAME% || echo [!] Failed to preprocess! && exit /b 1
     ) else (
         set FLAGS=/DGLEW_STATIC 
     )
@@ -128,12 +131,6 @@ REM                            v
                 %LIBRARY_DEFAULT_PATH%\SDL2\lib\x64\SDL2.lib ^
                 %LIBRARY_DEFAULT_PATH%\SDL2\lib\x64\SDL2main.lib ^
                 Opengl32.lib glu32.lib
-
-    if "%~1" == "debug" (
-        echo [!] PREPROCESSOR FILE CREATED!!
-        %CC% %CC_DEFAULT_FLAGS% %FLAGS%^
-            /P %INCLUDES% %SRC_FOLDER_DEFAULT_PATH%\%SRC_FILE_NAME% || echo [!] Failed to preprocess! && exit /b 1
-    )
 
     %CC% %CC_DEFAULT_FLAGS% %FLAGS%^
         %INCLUDES% ^
