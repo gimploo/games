@@ -1,4 +1,5 @@
 #define WINDOW_SDL
+//#define SDL2_ENABLE_LOG
 #include <poglib/application.h>
 #include <poglib/poggen.h>
 
@@ -7,11 +8,15 @@
 #define WINDOW_WIDTH    1080
 #define WINDOW_HEIGHT   920
 
+//TODO: experiment with 3d rotation learned for chillis video
+//TODO: experiment with wrap angle as well
+
 typedef struct content_t {
 
     poggen_t *engine;
 
 } content_t ;
+
 
 void fps_init(application_t *app) 
 {
@@ -20,6 +25,7 @@ void fps_init(application_t *app)
     };
 
     poggen_add_scene(c.engine, menu);
+    poggen_add_scene(c.engine, 3drotation);
 
     application_pass_content(app, &c);
 }
