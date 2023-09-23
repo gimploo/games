@@ -87,25 +87,23 @@ void tut03_init(scene_t *scene)
     scene_pass_content(scene, &c, sizeof(tut03));
 }
 
-void tut03_input(scene_t *scene) 
+void tut03_input(scene_t *scene, const f32 dt) 
 {
     tut03 *c = scene->content;
     const f32 dtheta = PI;
 
     if (window_keyboard_is_key_pressed(global_window, SDLK_a)) {
-        c->theta.x += dtheta * scene->dt;        
-        printf("a\n");
+        c->theta.x += dtheta * dt;        
     }
 
     if (window_keyboard_is_key_pressed(global_window, SDLK_s)) {
-        c->theta.y += dtheta * scene->dt;        
-        printf("s\n");
+        c->theta.y += dtheta * dt;        
     }
 
     if (window_keyboard_is_key_pressed(global_window, SDLK_d)) {
-        c->theta.z += dtheta * scene->dt;        
-        printf("d\n");
+        c->theta.z += dtheta * dt;        
     }
+
 }
 
 void tut03_update(scene_t *scene) 
@@ -119,6 +117,8 @@ void tut03_update(scene_t *scene)
                     matrix4f_rot(c->theta.z, (vec3f_t ){0.0f, 0.0f, 1.0f})
             )); 
 
+    // glms_mat4_print(rot, stdout);
+
     slot_t *vt = glmesh_getvertices(&c->cube);
     slot_iterator(vt, iter)
     {
@@ -128,8 +128,6 @@ void tut03_update(scene_t *scene)
         *vec = (vec3f_t ) {
             tmp.x, tmp.y, tmp.z
         };
-
-        *vec = glms_vec3_add(*vec, (vec3f_t ){0.0f, 0.0f, -0.5f});
         printf("AFTER "VEC3F_FMT"\n", vec->x, vec->y, vec->z);
     }
 
