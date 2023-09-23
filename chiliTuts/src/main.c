@@ -4,6 +4,7 @@
 
 //scenes
 #include "scenes/tut03.h"
+#include "scenes/tut04.h"
 
 typedef struct content_t {
 
@@ -18,6 +19,7 @@ void chiliTuts_init(application_t *app)
     };
 
     poggen_add_scene(c.engine, tut03);
+    poggen_add_scene(c.engine, tut04);
 
     application_pass_content(app, &c);
 }
@@ -56,7 +58,7 @@ int main(void)
             .height             = 920,
             .aspect_ratio       = 1080.f / 920.f,
             .fps_limit          = 60,
-            .background_color   = COLOR_GRAY
+            .background_color   = COLOR_WHITE
         },   
         .content = {
             .size = sizeof(content_t )
