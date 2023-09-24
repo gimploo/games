@@ -64,20 +64,20 @@ void tut04_input(scene_t *scene, const f32 dt)
         c->theta.z += wrap_angle(dtheta * dt);        
     }
 
-    if (window_keyboard_is_key_pressed(global_window, SDLK_DOWN)) {
-        c->offsety -= 0.8f * dt;
+    if (window_keyboard_is_key_pressed(global_window, SDLK_j)) {
+        c->offsety -= 2.0f * dt;
     }
 
-    if (window_keyboard_is_key_pressed(global_window, SDLK_UP)) {
-        c->offsety += 0.8f * dt;
+    if (window_keyboard_is_key_pressed(global_window, SDLK_k)) {
+        c->offsety += 2.0f * dt;
     }
 
-    if (window_keyboard_is_key_pressed(global_window, SDLK_LEFT)) {
-        c->offsetx -= 0.8f * dt;
+    if (window_keyboard_is_key_pressed(global_window, SDLK_h)) {
+        c->offsetx -= 2.0f * dt;
     }
 
-    if (window_keyboard_is_key_pressed(global_window, SDLK_RIGHT)) {
-        c->offsetx += 0.8f * dt;
+    if (window_keyboard_is_key_pressed(global_window, SDLK_l)) {
+        c->offsetx += 2.0f * dt;
     }
 
     if (window_keyboard_is_key_pressed(global_window, SDLK_r)) {
@@ -93,23 +93,18 @@ void tut04_update(scene_t *scene)
 {
     tut04 *c = scene->content;
 
-    const f32 aspect_ratio = global_poggen->handle.app->window.aspect_ratio;
-
     const matrix4f_t rot  = matrix4f_multiply(
             matrix4f_rot((c->theta.x), (vec3f_t ){1.0f, 0.0f, 0.0f}),
             matrix4f_multiply(
-                matrix4f_rot((c->theta.y), (vec3f_t ){0.0f, 1.0f, 0.0f}), 
+                matrix4f_rot((c->theta.y), (vec3f_t ){0.0f, 1.0f, 0.0f}),
                 matrix4f_rot((c->theta.z), (vec3f_t ){0.0f, 0.0f, 1.0f})
             )); 
 
-    
-    const matrix4f_t proj = matrix4f_perpective(
-            radians(60.0f), 
-            aspect_ratio, 
-            -0.1f, 
+    const matrix4f_t proj = glms_perspective(
+            radians(70), 
+            global_poggen->handle.app->window.aspect_ratio,
+            1.0f, 
             100.0f);
-    
-    const matrix4f_t trans = matrix4f_translation((vec3f_t ){c->offsetx, c->offsety, c->offsetz});
 
     slot_clear(&c->vtx);
     slot_iterator(&c->cube.vtx, iter)
@@ -120,20 +115,21 @@ void tut04_update(scene_t *scene)
             1.0f 
         };
 
-        //scale
-        vec = glms_vec4_scale(vec, 0.1f);
+        //scale 
+        vec = glms_vec4_scale(vec, 0.4f);
 
         //rotation
         vec = glms_mat4_mulv(rot, vec);
 
         //translation
-        vec = glms_mat4_mulv(trans, vec);
+        vec = glms_vec4_add(
+                vec, 
+                (vec4f_t ){ c->offsetx, c->offsety, c->offsetz, 0.0f});
 
-        //projection 
+        //proj
         vec = glms_mat4_mulv(proj, vec);
 
-        const vec3f_t final = (vec3f_t ) { vec.x, vec.y, vec.z};
-        slot_append(&c->vtx, final);
+        slot_append(&c->vtx, *((vec3f_t *)&vec));
     }
 }
 
