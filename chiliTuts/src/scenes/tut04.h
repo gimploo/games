@@ -3,10 +3,10 @@
 
 const char * const TUT04_CUBE_VSHADER = 
     "#version 330 core\n"
-    "layout (location = 0) in vec3 v_pos;\n"
+    "layout (location = 0) in vec4 v_pos;\n"
     "void main()\n"
     "{\n"
-        "gl_Position = vec4(v_pos, 1.0f);\n"
+        "gl_Position = v_pos;\n"
     "}";
 
 const char * const TUT04_CUBE_FSHADER= 
@@ -103,20 +103,13 @@ void tut04_update(scene_t *scene)
     const matrix4f_t proj = glms_perspective(
             radians(70), 
             global_poggen->handle.app->window.aspect_ratio,
-            1.0f, 
-            100.0f);
+            0.1f, 
+            1000.0f);
 
     slot_clear(&c->vtx);
     slot_iterator(&c->cube.vtx, iter)
     {
-        vec4f_t vec = { ((vec3f_t *)iter)->x,
-            ((vec3f_t *)iter)->y,
-            ((vec3f_t *)iter)->z,
-            1.0f 
-        };
-
-        //scale 
-        vec = glms_vec4_scale(vec, 0.4f);
+        vec4f_t vec = *(vec4f_t *)iter;
 
         //rotation
         vec = glms_mat4_mulv(rot, vec);
@@ -129,7 +122,7 @@ void tut04_update(scene_t *scene)
         //proj
         vec = glms_mat4_mulv(proj, vec);
 
-        slot_append(&c->vtx, *((vec3f_t *)&vec));
+        slot_append(&c->vtx, vec);
     }
 }
 
