@@ -15,11 +15,13 @@ typedef struct content_t {
 void chiliTuts_init(application_t *app) 
 {
     content_t c = {
-        .engine = poggen_init()
+        .engine = poggen_init(app)
     };
 
     poggen_add_scene(c.engine, tut03);
     poggen_add_scene(c.engine, tut04);
+
+    poggen_change_scene(c.engine, "tut04");
 
     application_pass_content(app, &c);
 }
