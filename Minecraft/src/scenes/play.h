@@ -62,7 +62,7 @@ typedef struct {
     struct {
         vec2i_t sprite_count;
         gltexture2d_t texture;
-        list_t uvs;
+        slot_t uvs;
     } atlas;
 
     struct {
@@ -71,23 +71,20 @@ typedef struct {
 
 } playscene_t ;
 
-typedef union {
-    struct {
-        sprite_uv_t front, back;
-        sprite_uv_t left, right;
-        sprite_uv_t top, bottom;
-    };
-} cube_uv_t;
 
 void generate_uvs(playscene_t *scene)
 {
-    list_t *uvs = &scene->atlas.uvs;
-    const sprite_uv_t front = sprite_uv(scene->atlas.sprite_count, 0);
-    list_append(
+    slot_t *uvs = &scene->atlas.uvs;
+    const u32 total_sprites = scene->atlas.sprite_count.x * scene->atlas.sprite_count.y;
+    for (u32 i = 0; i < total_sprites; i++)
+    {
+        const sprite_uv_t front = sprite_uv(scene->atlas.sprite_count, i);
+        slot_append(
             uvs, 
             ((cube_uv_t ){
                 front, front, front, front, front, front
             }));
+    }
 }
 
 void generate_world(playscene_t *scene)
@@ -153,7 +150,7 @@ void play_init(scene_t *scene)
         .atlas = {
             .sprite_count = {16, 16},
             .texture = gltexture2d_init("res/blocks.png"),
-            .uvs = list_init(cube_uv_t)
+            .uvs = slot_init(16 * 16, cube_uv_t)
         },
     };
 
@@ -235,7 +232,7 @@ void play_render(scene_t *scene)
                         },
                         [1] = {
                             .size = sizeof(cube_uv_t),
-                            .data = list_get_value(&c->atlas.uvs, 0),
+                            .data = slot_get_value(&c->atlas.uvs, 1),
                         },
                     },
                     .index = {
