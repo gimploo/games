@@ -35,12 +35,21 @@ const char *PLAYSCENE_FSSHADER =
 #define BLOCK_HEIGHT    2.0f
 
 typedef enum {
-    BT_GROUND_UP        = 0, 
-    BT_GROUND_SIDE      = 1,
-    BT_DIRT             = 2,
+    BST_GROUND_UP        = 0, 
+    BST_GROUND_SIDE      = 1,
+    BST_DIRT             = 2,
 
-    BT_COUNT
+    BST_COUNT
+} block_sprite_type_t;
+
+typedef enum {
+    BT_DIRT,
+    BT_GROUND,
+    BT_COBBLESTONE,
+
+    BT_COUNT,
 } block_type_t;
+
 
 typedef struct {
 
@@ -62,27 +71,65 @@ typedef struct {
     struct {
         vec2i_t sprite_count;
         gltexture2d_t texture;
-        slot_t uvs;
     } atlas;
 
     struct {
         list_t blocks;
+        slot_t uvs;
     } world;
+
+    struct {
+        list_t vtx;
+        list_t idx;
+    } gfx;
 
 } playscene_t ;
 
 
-void generate_uvs(playscene_t *scene)
+void add_block(playscene_t *scene)
 {
-    slot_t *uvs = &scene->atlas.uvs;
-    const u32 total_sprites = scene->atlas.sprite_count.x * scene->atlas.sprite_count.y;
-    for (u32 i = 0; i < total_sprites; i++)
+    list_t *vtx = scene->gfx.vtx;
+    list_t *
+}
+
+void generate_block_types(playscene_t *scene)
+{
+    slot_t *uvs = &scene->world.uvs;
+    const vec2i_t sprite_count = scene->atlas.sprite_count;
+    for (int i = 0; i < BT_COUNT; i++)
     {
-        const sprite_uv_t front = sprite_uv(scene->atlas.sprite_count, i);
+        sprite_uv_t 
+            front = {0}, 
+            back = {0} ,
+            left = {0},
+            right = {0}, 
+            top = {0}, 
+            bottom = {0};
+
+        switch(i)
+        {
+            case BT_GROUND:
+                front = back = left = right = bottom = sprite_uv(sprite_count, 2);
+                top = sprite_uv(sprite_count, 0);
+            break;
+            case BT_DIRT:
+                front = back = left = right = bottom = top = sprite_uv(sprite_count, 2);
+            break;
+            case BT_COBBLESTONE:
+                front = back = left = right = bottom = top = sprite_uv(sprite_count, 1);
+            break;
+            default: eprint("unknown type");
+        }
+
         slot_append(
             uvs, 
             ((cube_uv_t ){
-                front, front, front, front, front, front
+                .front = front,
+                .back = back,
+                .left = left,
+                .right = right,
+                .top = top,
+                .bottom = bottom
             }));
     }
 }
@@ -111,7 +158,7 @@ void generate_world(playscene_t *scene)
                     blocks, 
                     ((block_t ) {
                          .transform = mat,
-                         .type = BT_GROUND_UP,
+                         .type = BT_GROUND,
                      })
             );
         }
@@ -119,12 +166,12 @@ void generate_world(playscene_t *scene)
 
     block_t block = {
         .transform = glms_translate_make((vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f}),
-        .type = BT_GROUND_UP,
+        .type = BT_GROUND,
     };
     list_append(blocks, block);
 }
 
-void setup_uv_cube(playscene_t *scene)
+void generate_block_blueprint(playscene_t *scene)
 {
     slot_t *vtx = &scene->cube.vtx;
     slot_t *idx = &scene->cube.idx;
@@ -146,16 +193,16 @@ void play_init(scene_t *scene)
         },
         .world = {
             .blocks = list_init(block_t ),
+            .uvs = slot_init(BT_COUNT, cube_uv_t)
         },
         .atlas = {
-            .sprite_count = {16, 16},
-            .texture = gltexture2d_init("res/blocks.png"),
-            .uvs = slot_init(16 * 16, cube_uv_t)
+            .sprite_count = {24, 44},
+            .texture = gltexture2d_init("res/complete_sprite.png"),
         },
     };
 
-    setup_uv_cube(&c);
-    generate_uvs(&c);
+    generate_block_blueprint(&c);
+    generate_block_types(&c);
     generate_world(&c);
 
     scene_pass_content(scene, &c, sizeof(playscene_t ));
@@ -232,7 +279,7 @@ void play_render(scene_t *scene)
                         },
                         [1] = {
                             .size = sizeof(cube_uv_t),
-                            .data = slot_get_value(&c->atlas.uvs, 1),
+                            .data = slot_get_value(&c->world.uvs, 1),
                         },
                     },
                     .index = {
@@ -255,7 +302,10 @@ void play_destroy(scene_t *scene)
     playscene_t *c = scene->content;
     glshader_destroy(&c->shader);
 
+    slot_destroy(&c->cube.vtx);
+    slot_destroy(&c->cube.idx);
+
     gltexture2d_destroy(&c->atlas.texture);
-    list_destroy(&c->atlas.uvs);
+    slot_destroy(&c->world.uvs);
     list_destroy(&c->world.blocks);
 }
