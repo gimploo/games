@@ -6,16 +6,17 @@ const char *PLAYSCENE_VSSHADER =
     "#version 330 core\n"
     "layout (location = 0) in vec3 vertexPosition;\n"
     "layout (location = 1) in vec2 vertexUV;\n"
+    "layout (location = 2) in vec3 transform;\n"
 
     "out vec2 uv;\n"
 
     "uniform mat4 view;\n"
     "uniform mat4 projection;\n"
-    "uniform mat4 transform;\n"
 
     "void main()\n"
     "{\n"
-    "   gl_Position = projection * view * transform * vec4(vertexPosition, 1.0);\n"
+    "   vec3 pos = vertexPosition + transform;\n"
+    "   gl_Position = projection * view * vec4(pos, 1.0);\n"
     "   uv = vertexUV;\n"
     "}\n";
 
@@ -38,6 +39,7 @@ typedef enum {
     BST_GROUND_UP        = 0, 
     BST_GROUND_SIDE      = 1,
     BST_DIRT             = 2,
+    BST_COBBLESTONE      = 3,
 
     BST_COUNT
 } block_sprite_type_t;
@@ -53,20 +55,16 @@ typedef enum {
 
 typedef struct {
 
-    matrix4f_t transform;
+    vec3f_t transform;
     block_type_t type;
 
 } block_t ;
+
 
 typedef struct {
 
     glcamera_t camera;
     glshader_t shader;
-
-    struct {
-        slot_t vtx;
-        slot_t idx;
-    } cube;
 
     struct {
         vec2i_t sprite_count;
@@ -79,17 +77,26 @@ typedef struct {
     } world;
 
     struct {
-        list_t vtx;
         list_t idx;
     } gfx;
 
 } playscene_t ;
 
 
-void add_block(playscene_t *scene)
+void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos)
 {
-    list_t *vtx = scene->gfx.vtx;
-    list_t *
+    list_t *blocks = &scene->world.blocks;
+    list_t *idx = &scene->gfx.idx;
+
+    list_append_multiple(idx, DEFAULT_CUBE_INDICES_24);
+
+    list_append(
+        blocks, 
+        ((block_t ) {
+             .transform = nextpos,
+             .type = BT_GROUND,
+         })
+    );
 }
 
 void generate_block_types(playscene_t *scene)
@@ -109,14 +116,16 @@ void generate_block_types(playscene_t *scene)
         switch(i)
         {
             case BT_GROUND:
-                front = back = left = right = bottom = sprite_uv(sprite_count, 2);
-                top = sprite_uv(sprite_count, 0);
+                front = back = left = right = bottom = sprite_uv(
+                                                        sprite_count, 
+                                                        BST_GROUND_SIDE);
+                top = sprite_uv(sprite_count, BST_GROUND_UP);
             break;
             case BT_DIRT:
-                front = back = left = right = bottom = top = sprite_uv(sprite_count, 2);
+                front = back = left = right = bottom = top = sprite_uv(sprite_count, BST_DIRT);
             break;
             case BT_COBBLESTONE:
-                front = back = left = right = bottom = top = sprite_uv(sprite_count, 1);
+                front = back = left = right = bottom = top = sprite_uv(sprite_count, BST_COBBLESTONE);
             break;
             default: eprint("unknown type");
         }
@@ -139,8 +148,6 @@ void generate_world(playscene_t *scene)
     const u8 ground_width = 16;
     const u8 ground_height = 16;
 
-    list_t *blocks = &scene->world.blocks;
-
     for (u8 z = 0; z < ground_height; z++)
     {
         vec3f_t next_pos = vec3f(0.0f);
@@ -151,33 +158,14 @@ void generate_world(playscene_t *scene)
                 .y = 0.0f,
                 .z = z * (BLOCK_HEIGHT / 2)
             };
-
-            //NOTE: stopped here
-            const matrix4f_t mat = glms_translate_make(next_pos);
-            list_append(
-                    blocks, 
-                    ((block_t ) {
-                         .transform = mat,
-                         .type = BT_GROUND,
-                     })
-            );
+            add_block(scene, BT_GROUND, next_pos);
         }
     }
 
-    block_t block = {
-        .transform = glms_translate_make((vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f}),
-        .type = BT_GROUND,
-    };
-    list_append(blocks, block);
-}
-
-void generate_block_blueprint(playscene_t *scene)
-{
-    slot_t *vtx = &scene->cube.vtx;
-    slot_t *idx = &scene->cube.idx;
-
-    slot_insert_multiple(vtx, DEFAULT_CUBE_VERTICES_24);
-    slot_insert_multiple(idx, DEFAULT_CUBE_INDICES_24);
+    add_block(
+        scene, 
+        BT_GROUND,
+        (vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f});
 }
 
 void play_init(scene_t *scene)
@@ -187,21 +175,19 @@ void play_init(scene_t *scene)
                 (vec3f_t ){8.0f, 16.0f, 26.0f},
                 (vec2f_t ){-0.4f, 4.6f}), 
         .shader = glshader_from_cstr_init(PLAYSCENE_VSSHADER, PLAYSCENE_FSSHADER),
-        .cube = {
-            .vtx = slot_init(ARRAY_LEN(DEFAULT_CUBE_VERTICES_24), f32),
-            .idx = slot_init(ARRAY_LEN(DEFAULT_CUBE_INDICES_24), u32),
-        },
         .world = {
             .blocks = list_init(block_t ),
             .uvs = slot_init(BT_COUNT, cube_uv_t)
         },
         .atlas = {
-            .sprite_count = {24, 44},
-            .texture = gltexture2d_init("res/complete_sprite.png"),
+            .sprite_count = {16, 16},
+            .texture = gltexture2d_init("res/blocks.png"),
+        },
+        .gfx = {
+            .idx = list_init(u32),
         },
     };
 
-    generate_block_blueprint(&c);
     generate_block_types(&c);
     generate_world(&c);
 
@@ -242,59 +228,65 @@ void play_render(scene_t *scene)
 {
     playscene_t *c = scene->content;
 
-    list_iterator(&c->world.blocks, iter)
-    {
-        block_t *block = iter;
+    glrenderer3d_draw_mesh_custom(
+        (glrendererconfig_t ) {
 
-        glshader_send_uniform_matrix4f(
-                &c->shader, "transform", 
-                block->transform);
-        
-        glrenderer3d_draw_mesh_custom(
-                (glrendererconfig_t ) {
+            .instance_count = c->world.blocks.len,
+            .nattr = 3,
+            .attr = {
 
-                    .nattr = 2,
-                    .attr = {
+                // position
+                [0] = {
+                    .ncmp = 3,    
+                    .interleaved = {0},
+                    .is_instanced = false,
+                },
 
-                        // position
-                        [0] = {
-                            .ncmp = 3,    
-                            .stride = 0,
-                            .offset = 0
-                        },
+                //uv
+                [1] = {
+                    .ncmp = 2,
+                    .interleaved = {0},
+                    .is_instanced = false,
+                },
 
-                        //uv
-                        [1] = {
-                            .ncmp = 2,
-                            .stride = 0,
-                            .offset = slot_get_size(&c->cube.vtx)
-                        }
+                //transforms
+                [2] = {
+                    .ncmp = 3,
+                    .interleaved = {
+                        .offset = 0,
+                        .stride = sizeof(block_t ), 
                     },
+                    .is_instanced = true,
+                },
+            },
 
-                    .nsubbuffer = 2,
-                    .subbuffer = {
-                        [0] = {
-                            .size = slot_get_size(&c->cube.vtx),
-                            .data = slot_get_buffer(&c->cube.vtx),
-                        },
-                        [1] = {
-                            .size = sizeof(cube_uv_t),
-                            .data = slot_get_value(&c->world.uvs, 1),
-                        },
-                    },
-                    .index = {
-                        .nmemb = c->cube.idx.len,
-                        .data = slot_get_buffer(&c->cube.idx),
-                    },
+            .nsubbuffer = 3,
+            .subbuffer = {
+                [0] = {
+                    .size = sizeof(DEFAULT_CUBE_VERTICES_24),
+                    .data = (u8 *)DEFAULT_CUBE_VERTICES_24,
+                },
+                [1] = {
+                    .size = sizeof(cube_uv_t),
+                    .data = slot_get_value(&c->world.uvs, 1),
+                },
+                [2] = {
+                    .size = list_get_size(&c->world.blocks),
+                    .data = list_get_buffer(&c->world.blocks)
+                },
+            },
+            .index = {
+                .nmemb = c->gfx.idx.len,
+                .data = list_get_buffer(&c->gfx.idx),
+            },
 
-                    .shader = &c->shader,
-                    .ntexture = 1, 
-                    .texture = {
-                        [0] = &c->atlas.texture
-                    }
-                }
-        );
-    }
+            .shader = &c->shader,
+            .ntexture = 1, 
+            .texture = {
+                [0] = &c->atlas.texture
+            }
+        }
+    );
 }
 
 void play_destroy(scene_t *scene)
@@ -302,8 +294,7 @@ void play_destroy(scene_t *scene)
     playscene_t *c = scene->content;
     glshader_destroy(&c->shader);
 
-    slot_destroy(&c->cube.vtx);
-    slot_destroy(&c->cube.idx);
+    list_destroy(&c->gfx.idx);
 
     gltexture2d_destroy(&c->atlas.texture);
     slot_destroy(&c->world.uvs);
