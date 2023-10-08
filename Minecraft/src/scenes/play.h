@@ -6,7 +6,6 @@ const char *PLAYSCENE_VSSHADER =
     "#version 330 core\n"
     "layout (location = 0) in vec3 vertexPosition;\n"
     "layout (location = 1) in vec2 vertexUV;\n"
-    "layout (location = 2) in vec3 transform;\n"
 
     "out vec2 uv;\n"
 
@@ -15,8 +14,7 @@ const char *PLAYSCENE_VSSHADER =
 
     "void main()\n"
     "{\n"
-    "   vec3 pos = vertexPosition + transform;\n"
-    "   gl_Position = projection * view * vec4(pos, 1.0);\n"
+    "   gl_Position = projection * view * vec4(vertexPosition, 1.0);\n"
     "   uv = vertexUV;\n"
     "}\n";
 
@@ -77,6 +75,7 @@ typedef struct {
     } world;
 
     struct {
+        list_t buffer; // pos(xyz) | uv
         list_t idx;
     } gfx;
 
@@ -86,15 +85,34 @@ typedef struct {
 void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos)
 {
     list_t *blocks = &scene->world.blocks;
-    list_t *idx = &scene->gfx.idx;
 
-    list_append_multiple(idx, DEFAULT_CUBE_INDICES_24);
+    const cube_uv_t uv = *(cube_uv_t *)slot_get_value(&scene->world.uvs, type);
+
+    struct {
+        vec3f_t pos;
+        vec2f_t uv;
+    } buffer[24] = {0};
+
+    const vec3f_t *pos_buffer = (vec3f_t *)DEFAULT_CUBE_VERTICES_24;
+    const vec2f_t *uv_buffer = (vec2f_t *)uv.data;
+    for (u32 index = 0; index < 24; index++)
+    {
+        buffer[index].pos = glms_vec3_add(pos_buffer[index], nextpos);
+        buffer[index].uv = uv_buffer[index];
+    }
+    list_append(&scene->gfx.buffer, buffer);
+
+    for (u32 i = 0, offset = blocks->len; i < ARRAY_LEN(DEFAULT_CUBE_INDICES_24); i++) 
+    {
+        const u32 idx = (24 * offset ) + DEFAULT_CUBE_INDICES_24[i];
+        list_append(&scene->gfx.idx, idx);
+    }
 
     list_append(
         blocks, 
         ((block_t ) {
              .transform = nextpos,
-             .type = BT_GROUND,
+             .type = type,
          })
     );
 }
@@ -164,6 +182,14 @@ void generate_world(playscene_t *scene)
 
     add_block(
         scene, 
+        BT_COBBLESTONE,
+        (vec3f_t ){4 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f});
+    add_block(
+        scene, 
+        BT_DIRT,
+        (vec3f_t ){2 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f});
+    add_block(
+        scene, 
         BT_GROUND,
         (vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f});
 }
@@ -184,6 +210,7 @@ void play_init(scene_t *scene)
             .texture = gltexture2d_init("res/blocks.png"),
         },
         .gfx = {
+            .buffer = list_init(f32 [(3 + 2) * 4 * 6]), // face = 4 * [positions(3) and uv(2) ]
             .idx = list_init(u32),
         },
     };
@@ -220,8 +247,6 @@ void play_update(scene_t *scene, const f32 dt)
             &c->shader, 
             "view",
             glcamera_getview(&c->camera));
-
-
 }
 
 void play_render(scene_t *scene)
@@ -231,51 +256,40 @@ void play_render(scene_t *scene)
     glrenderer3d_draw_mesh_custom(
         (glrendererconfig_t ) {
 
-            .instance_count = c->world.blocks.len,
-            .nattr = 3,
+            .nattr = 2,
             .attr = {
 
                 // position
                 [0] = {
+                    .buffer_index = 0,
                     .ncmp = 3,    
-                    .interleaved = {0},
-                    .is_instanced = false,
+                    .interleaved = {
+                        .offset = 0,
+                        .stride = sizeof(vec3f_t ) + sizeof(vec2f_t ),
+                    },
                 },
 
                 //uv
                 [1] = {
+                    .buffer_index = 0,
                     .ncmp = 2,
-                    .interleaved = {0},
-                    .is_instanced = false,
-                },
-
-                //transforms
-                [2] = {
-                    .ncmp = 3,
                     .interleaved = {
-                        .offset = 0,
-                        .stride = sizeof(block_t ), 
+                        .offset = sizeof(vec3f_t),
+                        .stride = sizeof(vec3f_t ) + sizeof(vec2f_t ),
                     },
-                    .is_instanced = true,
+                },
+
+            },
+
+            .nbuffer = 1,
+            .buffer = {
+                [0] = {
+                    .size = list_get_size(&c->gfx.buffer),
+                    .data = list_get_buffer(&c->gfx.buffer),
                 },
             },
 
-            .nsubbuffer = 3,
-            .subbuffer = {
-                [0] = {
-                    .size = sizeof(DEFAULT_CUBE_VERTICES_24),
-                    .data = (u8 *)DEFAULT_CUBE_VERTICES_24,
-                },
-                [1] = {
-                    .size = sizeof(cube_uv_t),
-                    .data = slot_get_value(&c->world.uvs, 1),
-                },
-                [2] = {
-                    .size = list_get_size(&c->world.blocks),
-                    .data = list_get_buffer(&c->world.blocks)
-                },
-            },
-            .index = {
+            .indexbuffer = {
                 .nmemb = c->gfx.idx.len,
                 .data = list_get_buffer(&c->gfx.idx),
             },
@@ -295,6 +309,7 @@ void play_destroy(scene_t *scene)
     glshader_destroy(&c->shader);
 
     list_destroy(&c->gfx.idx);
+    list_destroy(&c->gfx.buffer);
 
     gltexture2d_destroy(&c->atlas.texture);
     slot_destroy(&c->world.uvs);

@@ -3,9 +3,8 @@
 #include <poglib/poggen.h>
 #include <poglib/ecs.h>
 
+//scenes
 #include "scenes/play.h"
-
-#define MINECRAFT_MAX_ENTITY_TYPES 2
 
 typedef struct Minecraft {
 
