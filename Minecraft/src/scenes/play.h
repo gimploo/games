@@ -210,7 +210,7 @@ void play_init(scene_t *scene)
             .texture = gltexture2d_init("res/blocks.png"),
         },
         .gfx = {
-            .buffer = list_init(f32 [(3 + 2) * 4 * 6]), // face = 4 * [positions(3) and uv(2) ]
+            .buffer = list_init(f32 [(3 + 2) * 24]), // 1 cube = 24 * [positions(3) and uv(2) ]
             .idx = list_init(u32),
         },
     };
