@@ -30,6 +30,18 @@ const char *PLAYSCENE_FSSHADER =
     "       FragColor = texture(atlas, uv);\n"
     "}\n";
 
+typedef enum {
+
+    FRONT_FACE = 0,
+    BACK_FACE = 1,
+    LEFT_FACE = 2,
+    RIGHT_FACE = 3,
+    TOP_FACE = 4,
+    BOTTOM_FACE = 5,
+
+} cube_faces_t;
+
+
 #define BLOCK_WIDTH     2.0f
 #define BLOCK_HEIGHT    2.0f
 
@@ -70,7 +82,7 @@ typedef struct {
     } atlas;
 
     struct {
-        list_t blocks;
+        slot_t chunks;
         slot_t uvs;
     } world;
 
@@ -82,30 +94,50 @@ typedef struct {
 } playscene_t ;
 
 
-void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos)
+void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos, const bool isopaque[6])
 {
-    list_t *blocks = &scene->world.blocks;
+    list_t *blocks = slot_get_value(&scene->world.chunks, 0);
 
-    const cube_uv_t uv = *(cube_uv_t *)slot_get_value(&scene->world.uvs, type);
+    const cube_uv_t uv = *(cube_uv_t *)slot_get_value(
+            &scene->world.uvs, 
+            type);
 
-    struct {
-        vec3f_t pos;
-        vec2f_t uv;
-    } buffer[24] = {0};
-
-    const vec3f_t *pos_buffer = (vec3f_t *)DEFAULT_CUBE_VERTICES_24;
-    const vec2f_t *uv_buffer = (vec2f_t *)uv.data;
-    for (u32 index = 0; index < 24; index++)
+    for (u32 face_index = 0; face_index < 6;)
     {
-        buffer[index].pos = glms_vec3_add(pos_buffer[index], nextpos);
-        buffer[index].uv = uv_buffer[index];
-    }
-    list_append(&scene->gfx.buffer, buffer);
+        const vec3f_t *pos_buffer = (vec3f_t *)DEFAULT_CUBE_VERTICES_24;
+        const vec2f_t *uv_buffer = (vec2f_t *)uv.data;
 
-    for (u32 i = 0, offset = blocks->len; i < ARRAY_LEN(DEFAULT_CUBE_INDICES_24); i++) 
-    {
-        const u32 idx = (24 * offset ) + DEFAULT_CUBE_INDICES_24[i];
-        list_append(&scene->gfx.idx, idx);
+        // skips a face
+        if (!isopaque[face_index]){
+            face_index++;
+            continue;
+        }
+
+        //adding idx
+        for (u32 idx = 0, offset = scene->gfx.buffer.len; idx < 6; idx++)
+        {
+            const u32 indice = offset + DEFAULT_CUBE_INDICES_24[idx];
+            list_append(
+                &scene->gfx.idx,
+                indice);
+        }
+        
+        // adding vtx
+        for (u32 vtx = 0; vtx < 4; vtx++) 
+        {
+            const vec3f_t pos = glms_vec3_add(
+                                    pos_buffer[(face_index * 4) + vtx], 
+                                    nextpos);
+            const vec2f_t uv = uv_buffer[(face_index * 4) + vtx];
+            list_append(
+                &scene->gfx.buffer, 
+                ((f32 [5] ) {
+                    pos.x, pos.y, pos.z, uv.u, uv.v
+                }));
+
+        }
+
+        face_index++;
     }
 
     list_append(
@@ -134,10 +166,9 @@ void generate_block_types(playscene_t *scene)
         switch(i)
         {
             case BT_GROUND:
-                front = back = left = right = bottom = sprite_uv(
-                                                        sprite_count, 
-                                                        BST_GROUND_SIDE);
-                top = sprite_uv(sprite_count, BST_GROUND_UP);
+                front   = back = left = right = sprite_uv(sprite_count, BST_GROUND_SIDE);
+                top     = sprite_uv(sprite_count, BST_GROUND_UP);
+                bottom  = sprite_uv(sprite_count, BST_DIRT);
             break;
             case BT_DIRT:
                 front = back = left = right = bottom = top = sprite_uv(sprite_count, BST_DIRT);
@@ -166,9 +197,10 @@ void generate_world(playscene_t *scene)
     const u8 ground_width = 16;
     const u8 ground_height = 16;
 
-    for (u8 z = 0; z < ground_height; z++)
+    for (u8 z = 0; z < ground_width; z++)
     {
         vec3f_t next_pos = vec3f(0.0f);
+
         for (u8 x = 0; x < ground_width; x++)
         {
             next_pos = (vec3f_t ){
@@ -176,22 +208,35 @@ void generate_world(playscene_t *scene)
                 .y = 0.0f,
                 .z = z * (BLOCK_HEIGHT / 2)
             };
-            add_block(scene, BT_GROUND, next_pos);
+
+            bool isopaque[6] = {0};
+
+            if ((z + 1) == ground_width)    isopaque[FRONT_FACE] = true;
+            if (z == 0)                     isopaque[BACK_FACE] = true;
+            if (x == 0)                     isopaque[LEFT_FACE] = true;
+            if ((x + 1) == ground_width)    isopaque[RIGHT_FACE] = true;
+            
+            //TODO: account for height
+            isopaque[TOP_FACE] = isopaque[BOTTOM_FACE] = true;
+
+            add_block(scene, BT_GROUND, next_pos, isopaque);
         }
     }
+
+    const bool full_opaque[6] = {true, true, true, true, true, true };
 
     add_block(
         scene, 
         BT_COBBLESTONE,
-        (vec3f_t ){4 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f});
+        (vec3f_t ){4 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
         scene, 
         BT_DIRT,
-        (vec3f_t ){2 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f});
+        (vec3f_t ){2 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
         scene, 
         BT_GROUND,
-        (vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f});
+        (vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
 }
 
 void play_init(scene_t *scene)
@@ -202,7 +247,7 @@ void play_init(scene_t *scene)
                 (vec2f_t ){-0.4f, 4.6f}), 
         .shader = glshader_from_cstr_init(PLAYSCENE_VSSHADER, PLAYSCENE_FSSHADER),
         .world = {
-            .blocks = list_init(block_t ),
+            .chunks = slot_init(16, list_t),
             .uvs = slot_init(BT_COUNT, cube_uv_t)
         },
         .atlas = {
@@ -210,10 +255,17 @@ void play_init(scene_t *scene)
             .texture = gltexture2d_init("res/blocks.png"),
         },
         .gfx = {
-            .buffer = list_init(f32 [(3 + 2) * 24]), // 1 cube = 24 * [positions(3) and uv(2) ]
+            .buffer = list_init(f32 [5]), // 1 vertex [pos[3] uv[2]]
             .idx = list_init(u32),
         },
     };
+
+
+    for(u8 i = 0; i < 16; i++) 
+    {
+        const list_t list = list_init(block_t );
+        slot_insert(&c.world.chunks, i, list);
+    }
 
     generate_block_types(&c);
     generate_world(&c);
@@ -313,5 +365,8 @@ void play_destroy(scene_t *scene)
 
     gltexture2d_destroy(&c->atlas.texture);
     slot_destroy(&c->world.uvs);
-    list_destroy(&c->world.blocks);
+
+    slot_iterator(&c->world.chunks, blocks)
+        list_destroy((list_t *)blocks);
+    slot_destroy(&c->world.chunks);
 }
