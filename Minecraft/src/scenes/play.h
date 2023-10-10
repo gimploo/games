@@ -197,29 +197,40 @@ void generate_world(playscene_t *scene)
     const u8 ground_width = 16;
     const u8 ground_height = 16;
 
-    for (u8 z = 0; z < ground_width; z++)
+    for (u8 y = 0; y < ground_height; y++)
     {
-        vec3f_t next_pos = vec3f(0.0f);
-
-        for (u8 x = 0; x < ground_width; x++)
+        for (u8 z = 0; z < ground_width; z++)
         {
-            next_pos = (vec3f_t ){
-                .x = x * (BLOCK_WIDTH / 2),
-                .y = 0.0f,
-                .z = z * (BLOCK_HEIGHT / 2)
-            };
+            vec3f_t next_pos = vec3f(0.0f);
 
-            bool isopaque[6] = {0};
+            for (u8 x = 0; x < ground_width; x++)
+            {
+                next_pos = (vec3f_t ){
+                    .x = x * (BLOCK_WIDTH / 2),
+                    .y = y * (BLOCK_HEIGHT / 2),
+                    .z = z * (BLOCK_WIDTH / 2)
+                };
 
-            if ((z + 1) == ground_width)    isopaque[FRONT_FACE] = true;
-            if (z == 0)                     isopaque[BACK_FACE] = true;
-            if (x == 0)                     isopaque[LEFT_FACE] = true;
-            if ((x + 1) == ground_width)    isopaque[RIGHT_FACE] = true;
-            
-            //TODO: account for height
-            isopaque[TOP_FACE] = isopaque[BOTTOM_FACE] = true;
+                bool isopaque[6] = {0};
+                block_type_t type = 0;
 
-            add_block(scene, BT_GROUND, next_pos, isopaque);
+                if ((z + 1) == ground_width)    isopaque[FRONT_FACE] = true;
+                if (z == 0)                     isopaque[BACK_FACE] = true;
+                if (x == 0)                     isopaque[LEFT_FACE] = true;
+                if ((x + 1) == ground_width)    isopaque[RIGHT_FACE] = true;
+                if (y == 0)                     isopaque[BOTTOM_FACE] = true;
+                if ((y + 1) == ground_height)   isopaque[TOP_FACE] = true;
+                
+                //levels
+                if (y < 10) 
+                    type = BT_COBBLESTONE;
+                else if (y >= 10 && y < 15)
+                    type = BT_DIRT;
+                else 
+                    type = BT_GROUND;
+
+                add_block(scene, type, next_pos, isopaque);
+            }
         }
     }
 
@@ -228,15 +239,15 @@ void generate_world(playscene_t *scene)
     add_block(
         scene, 
         BT_COBBLESTONE,
-        (vec3f_t ){4 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
+        (vec3f_t ){4 * BLOCK_WIDTH/2 , 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
         scene, 
         BT_DIRT,
-        (vec3f_t ){2 * BLOCK_WIDTH/2 , 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
+        (vec3f_t ){2 * BLOCK_WIDTH/2 , 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
         scene, 
         BT_GROUND,
-        (vec3f_t ){0.0f, 2 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
+        (vec3f_t ){0.0f, 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
 }
 
 void play_init(scene_t *scene)
