@@ -42,6 +42,10 @@ typedef enum {
 } cube_faces_t;
 
 
+#define CHUNK_WIDTH     16
+#define CHUNK_HEIGHT    16
+#define CHUNK_DEPTH     16
+
 #define BLOCK_WIDTH     2.0f
 #define BLOCK_HEIGHT    2.0f
 
@@ -94,10 +98,8 @@ typedef struct {
 } playscene_t ;
 
 
-void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos, const bool isopaque[6])
+void add_block(playscene_t *scene, list_t *chunk, block_type_t type, vec3f_t nextpos, const bool isopaque[6])
 {
-    list_t *blocks = slot_get_value(&scene->world.chunks, 0);
-
     const cube_uv_t uv = *(cube_uv_t *)slot_get_value(
             &scene->world.uvs, 
             type);
@@ -141,7 +143,7 @@ void add_block(playscene_t *scene, block_type_t type, vec3f_t nextpos, const boo
     }
 
     list_append(
-        blocks, 
+        chunk, 
         ((block_t ) {
              .transform = nextpos,
              .type = type,
@@ -192,34 +194,31 @@ void generate_block_types(playscene_t *scene)
     }
 }
 
-void generate_world(playscene_t *scene)
+void generate_chunk(playscene_t *scene, list_t *chunk, const vec3f_t pos)
 {
-    const u8 ground_width = 16;
-    const u8 ground_height = 16;
-
-    for (u8 y = 0; y < ground_height; y++)
+    for (u8 y = 0; y < CHUNK_HEIGHT; y++)
     {
-        for (u8 z = 0; z < ground_width; z++)
+        for (u8 z = 0; z < CHUNK_DEPTH; z++)
         {
-            vec3f_t next_pos = vec3f(0.0f);
-
-            for (u8 x = 0; x < ground_width; x++)
+            for (u8 x = 0; x < CHUNK_WIDTH; x++)
             {
-                next_pos = (vec3f_t ){
+                vec3f_t next_pos = {
                     .x = x * (BLOCK_WIDTH / 2),
                     .y = y * (BLOCK_HEIGHT / 2),
                     .z = z * (BLOCK_WIDTH / 2)
                 };
 
+                next_pos = glms_vec3_add(next_pos, pos);
+
                 bool isopaque[6] = {0};
                 block_type_t type = 0;
 
-                if ((z + 1) == ground_width)    isopaque[FRONT_FACE] = true;
-                if (z == 0)                     isopaque[BACK_FACE] = true;
-                if (x == 0)                     isopaque[LEFT_FACE] = true;
-                if ((x + 1) == ground_width)    isopaque[RIGHT_FACE] = true;
-                if (y == 0)                     isopaque[BOTTOM_FACE] = true;
-                if ((y + 1) == ground_height)   isopaque[TOP_FACE] = true;
+                if ((z + 1) == CHUNK_DEPTH)    isopaque[FRONT_FACE] = true;
+                if (z == 0)                    isopaque[BACK_FACE] = true;
+                if (x == 0)                    isopaque[LEFT_FACE] = true;
+                if ((x + 1) == CHUNK_WIDTH)    isopaque[RIGHT_FACE] = true;
+                if (y == 0)                    isopaque[BOTTOM_FACE] = true;
+                if ((y + 1) == CHUNK_HEIGHT)   isopaque[TOP_FACE] = true;
                 
                 //levels
                 if (y < 10) 
@@ -229,36 +228,63 @@ void generate_world(playscene_t *scene)
                 else 
                     type = BT_GROUND;
 
-                add_block(scene, type, next_pos, isopaque);
+                add_block(scene, chunk, type, next_pos, isopaque);
             }
         }
     }
 
+}
+
+void generate_world(playscene_t *c)
+{
     const bool full_opaque[6] = {true, true, true, true, true, true };
 
+    list_t *chunk = slot_get_value(&c->world.chunks, 0);
     add_block(
-        scene, 
+        c, chunk,
         BT_COBBLESTONE,
         (vec3f_t ){4 * BLOCK_WIDTH/2 , 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
-        scene, 
+        c, chunk,
         BT_DIRT,
         (vec3f_t ){2 * BLOCK_WIDTH/2 , 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
     add_block(
-        scene, 
+        c, chunk,
         BT_GROUND,
         (vec3f_t ){0.0f, 17 * BLOCK_WIDTH/2, 0.0f}, full_opaque);
+
+    vec3f_t offset = {0};
+    slot_iterator(&c->world.chunks, chunk)
+    {
+        generate_chunk(
+            c, 
+            chunk,
+            (vec3f_t ) {
+                .x = CHUNK_WIDTH * offset.x,
+                .y = CHUNK_HEIGHT * offset.y,
+                .z = CHUNK_DEPTH * offset.z
+            }
+        );
+
+        offset.x++;
+        if (offset.x == 4) {
+            offset.x = 0;
+            offset.z++;
+        }
+    }
 }
 
 void play_init(scene_t *scene)
 {
+    const u32 total_chunks = 16;
+
     playscene_t c = {
         .camera = glcamera_perspective(
                 (vec3f_t ){8.0f, 16.0f, 26.0f},
                 (vec2f_t ){-0.4f, 4.6f}), 
         .shader = glshader_from_cstr_init(PLAYSCENE_VSSHADER, PLAYSCENE_FSSHADER),
         .world = {
-            .chunks = slot_init(16, list_t),
+            .chunks = slot_init(total_chunks, list_t),
             .uvs = slot_init(BT_COUNT, cube_uv_t)
         },
         .atlas = {
@@ -271,11 +297,10 @@ void play_init(scene_t *scene)
         },
     };
 
-
-    for(u8 i = 0; i < 16; i++) 
+    for(u8 i = 0; i < total_chunks; i++) 
     {
-        const list_t list = list_init(block_t );
-        slot_insert(&c.world.chunks, i, list);
+        const list_t chunk = list_init(block_t );
+        slot_insert(&c.world.chunks, i, chunk);
     }
 
     generate_block_types(&c);
