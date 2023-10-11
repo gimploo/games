@@ -267,7 +267,7 @@ void generate_world(playscene_t *c)
         );
 
         offset.x++;
-        if (offset.x == 4) {
+        if (offset.x == (u32)(c->world.chunks.len / 2)) {
             offset.x = 0;
             offset.z++;
         }
@@ -276,7 +276,7 @@ void generate_world(playscene_t *c)
 
 void play_init(scene_t *scene)
 {
-    const u32 total_chunks = 16;
+    const u32 total_chunks = 4;
 
     playscene_t c = {
         .camera = glcamera_perspective(
