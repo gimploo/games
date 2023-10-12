@@ -25,8 +25,13 @@ void play_init(scene_t *scene)
             .idx = list_init(u32),
         },
         .player = {
-            .pos = {0},
+            .pos = {0.0f, 2.0f, 0.0f},
+            .quaternion = {0.0f, 0.0f, 0.0f},
             .view = MATRIX4F_IDENTITY,
+            .gfx = {
+                .vtx = slot_init(ARRAY_LEN(DEFAULT_CUBE_VERTICES_8), f32),
+                .idx = slot_init(ARRAY_LEN(DEFAULT_CUBE_INDICES_8), u32),
+            }
         }
     };
 
@@ -36,6 +41,7 @@ void play_init(scene_t *scene)
         slot_insert(&c.world.chunks, i, chunk);
     }
 
+    create_player_hitbox(&c);
     generate_block_types(&c);
     generate_world(&c);
 
@@ -67,15 +73,15 @@ void play_update(scene_t *scene, const f32 dt)
             ));
 
     update_player(c);
-    // glshader_send_uniform_matrix4f(
-    //         &c->shader, 
-    //         "view",
-    //         c->player.view);
-
     glshader_send_uniform_matrix4f(
             &c->shader, 
             "view",
-            glcamera_getview(&c->camera));
+            c->player.view);
+
+    // glshader_send_uniform_matrix4f(
+    //         &c->shader, 
+    //         "view",
+    //         glcamera_getview(&c->camera));
 
 }
 
@@ -86,7 +92,7 @@ void play_render(scene_t *scene)
     glrenderer3d_draw(
         (glrendererconfig_t ) {
 
-            .nattr = 2,
+            .nattr = 3,
             .attr = {
 
                 // position
@@ -109,9 +115,16 @@ void play_render(scene_t *scene)
                     },
                 },
 
+                // player pos
+                [2] = {
+                    .buffer_index = 1,
+                    .ncmp = 3,    
+                    .interleaved = {0},
+                },
+
             },
 
-            .nbuffer = 1,
+            .nbuffer = 2,
             .buffer = {
                 [0] = {
                     .size = list_get_size(&c->gfx.buffer),
@@ -122,6 +135,16 @@ void play_render(scene_t *scene)
                         .data = list_get_buffer(&c->gfx.idx),
                     },
                 },
+
+                [1] = {
+                    .size = slot_get_size(&c->player.gfx.vtx),
+                    .data = slot_get_buffer(&c->player.gfx.vtx),
+
+                    .indexbuffer = {
+                        .nmemb = c->player.gfx.idx.len,
+                        .data = slot_get_buffer(&c->player.gfx.idx),
+                    },
+                }
             },
 
             .shader = &c->shader,
@@ -140,6 +163,9 @@ void play_destroy(scene_t *scene)
 
     list_destroy(&c->gfx.idx);
     list_destroy(&c->gfx.buffer);
+
+    slot_destroy(&c->player.gfx.idx);
+    slot_destroy(&c->player.gfx.vtx);
 
     gltexture2d_destroy(&c->atlas.texture);
     slot_destroy(&c->world.uvs);

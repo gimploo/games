@@ -9,9 +9,10 @@ typedef struct {
 
     struct {
         vec3f_t pos;
+        vec3f_t quaternion;
         matrix4f_t view;
         struct {
-            slot_t buffer;
+            slot_t vtx;
             slot_t idx;
         } gfx;
     } player;
