@@ -1,0 +1,12 @@
+-std=c11
+-g
+-DDEBUG
+-Wall
+-Wno-missing-braces
+-fno-exceptions
+-I.\\lib\\
+-I.\\lib\\GLEW\\include
+-I.\\lib\\FREETYPE\\include
+-I.\\lib\\poglib\\external\\assimp\\include
+-I.\\lib\\SDL2\\include
+-I.\\lib\\GLFW\\include
