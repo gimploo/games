@@ -11,7 +11,9 @@ typedef struct {
         vec3f_t pos;
         vec3f_t quaternion;
         matrix4f_t view;
+        vec3f_t delta;
         struct {
+            bool update;
             slot_t vtx;
             slot_t idx;
         } gfx;

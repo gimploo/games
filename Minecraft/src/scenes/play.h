@@ -25,11 +25,13 @@ void play_init(scene_t *scene)
             .idx = list_init(u32),
         },
         .player = {
-            .pos = {0.0f, 2.0f, 0.0f},
+            .pos = {2.0f, 2.0f, 0.0f},
             .quaternion = {0.0f, 0.0f, 0.0f},
             .view = MATRIX4F_IDENTITY,
+            .delta = {0},
             .gfx = {
-                .vtx = slot_init(ARRAY_LEN(DEFAULT_CUBE_VERTICES_8), f32),
+                .update = true,
+                .vtx = slot_init(ARRAY_LEN(DEFAULT_CUBE_VERTICES_8)/3, vec3f_t ),
                 .idx = slot_init(ARRAY_LEN(DEFAULT_CUBE_INDICES_8), u32),
             }
         }
@@ -73,15 +75,15 @@ void play_update(scene_t *scene, const f32 dt)
             ));
 
     update_player(c);
-    glshader_send_uniform_matrix4f(
-            &c->shader, 
-            "view",
-            c->player.view);
-
     // glshader_send_uniform_matrix4f(
     //         &c->shader, 
     //         "view",
-    //         glcamera_getview(&c->camera));
+    //         c->player.view);
+
+    glshader_send_uniform_matrix4f(
+            &c->shader, 
+            "view",
+            glcamera_getview(&c->camera));
 
 }
 
