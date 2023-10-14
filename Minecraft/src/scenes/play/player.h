@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-void update_player(playscene_t *c, const vec3f_t delta)
+void update_player_mesh(playscene_t *c, const vec3f_t delta)
 {
     slot_t *vtx = &c->player.gfx.vtx;
     slot_iterator(vtx, iter)
@@ -26,7 +26,7 @@ void create_player_hitbox(playscene_t *c)
     slot_insert_multiple(vtx, cv);
     slot_insert_multiple(idx, DEFAULT_CUBE_INDICES_8);
 
-    update_player(c, c->player.pos);
+    update_player_mesh(c, c->player.pos);
 }
 
 void update_player_input(playscene_t *c)
@@ -84,7 +84,7 @@ void update_player_input(playscene_t *c)
         || oldpos.z != newpos.z) {
 
         c->player.delta = glms_vec3_sub(newpos, oldpos);
-        update_player(c, c->player.delta);
+        update_player_mesh(c, c->player.delta);
     }
 }
 
