@@ -64,7 +64,7 @@ void play_update(scene_t *scene, const f32 dt)
     playscene_t *c = scene->content;
     const f32 aspect_ratio = global_poggen->handle.app->window.aspect_ratio;
 
-    if (window_mouse_button_is_pressed(global_window, SDL_MOUSEBUTTON_MIDDLE))
+    if (window_mouse_button_just_pressed(global_window, SDL_MOUSEBUTTON_MIDDLE))
         c->debug = !c->debug;
 
     glshader_send_uniform_matrix4f(
