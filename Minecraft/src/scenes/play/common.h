@@ -13,7 +13,6 @@ typedef struct {
         matrix4f_t view;
         vec3f_t delta;
         struct {
-            bool update;
             slot_t vtx;
             slot_t idx;
         } gfx;
@@ -33,6 +32,8 @@ typedef struct {
         list_t buffer; // pos(xyz) | uv
         list_t idx;
     } gfx;
+
+    bool debug;
 
 } playscene_t ;
 

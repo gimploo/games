@@ -25,16 +25,16 @@ void play_init(scene_t *scene)
             .idx = list_init(u32),
         },
         .player = {
-            .pos = {2.0f, 2.0f, 0.0f},
+            .pos = {10.f, 2.f, 6.f},
             .quaternion = {0.0f, 0.0f, 0.0f},
             .view = MATRIX4F_IDENTITY,
             .delta = {0},
             .gfx = {
-                .update = true,
                 .vtx = slot_init(ARRAY_LEN(DEFAULT_CUBE_VERTICES_8)/3, vec3f_t ),
                 .idx = slot_init(ARRAY_LEN(DEFAULT_CUBE_INDICES_8), u32),
             }
-        }
+        },
+        .debug = true,
     };
 
     for(u8 i = 0; i < total_chunks; i++) 
@@ -55,15 +55,17 @@ void play_input(scene_t *scene, const f32 dt)
 {
     playscene_t *c = scene->content;
 
-    glcamera_process_input(&c->camera, dt);
-
-    update_player_input(c);
+    if (c->debug)   glcamera_process_input(&c->camera, dt);
+    else            update_player_input(c);
 }
 
 void play_update(scene_t *scene, const f32 dt)
 {
     playscene_t *c = scene->content;
     const f32 aspect_ratio = global_poggen->handle.app->window.aspect_ratio;
+
+    if (window_mouse_button_is_pressed(global_window, SDL_MOUSEBUTTON_MIDDLE))
+        c->debug = !c->debug;
 
     glshader_send_uniform_matrix4f(
             &c->shader, 
@@ -74,16 +76,8 @@ void play_update(scene_t *scene, const f32 dt)
                 1.0f, 1000.0f
             ));
 
-    update_player(c);
-    // glshader_send_uniform_matrix4f(
-    //         &c->shader, 
-    //         "view",
-    //         c->player.view);
-
-    glshader_send_uniform_matrix4f(
-            &c->shader, 
-            "view",
-            glcamera_getview(&c->camera));
+    if (c->debug)   glshader_send_uniform_matrix4f(&c->shader, "view", glcamera_getview(&c->camera));
+    else            glshader_send_uniform_matrix4f( &c->shader, "view", c->player.view);
 
 }
 
