@@ -25,6 +25,9 @@ void play_init(scene_t *scene)
             .idx = list_init(u32),
         },
         .player = {
+            .config = {
+                .sens = 0.002f
+            },
             .pos = {10.f, 2.f, 6.f},
             .quaternion = {0.0f, 0.0f, 0.0f},
             .view = MATRIX4F_IDENTITY,
@@ -55,8 +58,13 @@ void play_input(scene_t *scene, const f32 dt)
 {
     playscene_t *c = scene->content;
 
-    if (c->debug)   glcamera_process_input(&c->camera, dt);
-    else            update_player_input(c);
+    if (c->debug)   {
+        SDL_SetRelativeMouseMode(false);
+        glcamera_process_input(&c->camera, dt);
+    } else {
+        SDL_SetRelativeMouseMode(true);
+        update_player_input(c);
+    }
 }
 
 void play_update(scene_t *scene, const f32 dt)

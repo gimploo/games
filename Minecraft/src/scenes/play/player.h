@@ -31,14 +31,19 @@ void create_player_hitbox(playscene_t *c)
 
 void update_player_input(playscene_t *c)
 {
-    if (c->debug) return;
-
     const f32 dx = 10.f;
     const f32 dt = application_get_dt(global_poggen->handle.app);
 
+    static vec2f_t lastmpos = {0};
+
     const vec2f_t mpos = window_mouse_get_norm_position(global_window);
 
-    const vec3f_t PLAYER_FRONT = {mpos.x, mpos.y, -1.0f};
+    const vec3f_t PLAYER_FRONT = {
+        lastmpos.x + mpos.x,
+        lastmpos.y + mpos.y,
+        -1.0f
+    };
+
     const vec3f_t PLAYER_UP = {0.0f, 1.0f, 0.0f};
 
     const vec3f_t oldpos = c->player.pos;
@@ -71,12 +76,12 @@ void update_player_input(playscene_t *c)
                             ) 
                         );
 
+
     c->player.view = glms_lookat(
             c->player.pos, 
             glms_vec3_add(c->player.pos, PLAYER_FRONT), 
             PLAYER_UP);
 
-    c->player.quaternion = (vec3f_t ){ mpos.y, mpos.x, 0.f }; 
     
     const vec3f_t newpos = c->player.pos;
     if (oldpos.x != newpos.x 
@@ -86,6 +91,7 @@ void update_player_input(playscene_t *c)
         c->player.delta = glms_vec3_sub(newpos, oldpos);
         update_player_mesh(c, c->player.delta);
     }
+    lastmpos = mpos;
 }
 
 

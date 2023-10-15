@@ -8,6 +8,9 @@ typedef struct {
     glshader_t shader;
 
     struct {
+        struct {
+            f32 sens;
+        } config;
         vec3f_t pos;
         vec3f_t quaternion;
         matrix4f_t view;

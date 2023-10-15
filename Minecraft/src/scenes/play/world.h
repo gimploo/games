@@ -42,9 +42,9 @@ typedef enum {
 } cube_faces_t;
 
 
-#define CHUNK_WIDTH     16
-#define CHUNK_HEIGHT    16
-#define CHUNK_DEPTH     16
+#define CHUNK_WIDTH     32
+#define CHUNK_HEIGHT    32
+#define CHUNK_DEPTH     32
 
 #define BLOCK_WIDTH     2.0f
 #define BLOCK_HEIGHT    2.0f
