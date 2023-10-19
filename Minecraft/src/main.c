@@ -1,5 +1,5 @@
 #define WINDOW_SDL
-#define DISABLE_LOGGING
+// #define DISABLE_LOGGING
 #include <poglib/application.h>
 #include <poglib/poggen.h>
 #include <poglib/ecs.h>

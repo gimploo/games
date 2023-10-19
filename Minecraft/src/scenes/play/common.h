@@ -8,14 +8,17 @@ typedef struct {
     glshader_t shader;
 
     struct {
+        vec3f_t     pos;
+        matrix4f_t  view, transform;
+        slot_t      mesh;
         struct {
             f32 sens;
         } config;
-        vec3f_t pos;
-        vec3f_t quaternion;
-        matrix4f_t view;
-        vec3f_t delta;
         struct {
+            vec3f_t front;
+        } direction;
+        struct {
+            glshader_t shader;
             slot_t vtx;
             slot_t idx;
         } gfx;
