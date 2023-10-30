@@ -42,7 +42,7 @@ void play_init(scene_t *scene)
                 .idx = slot_init(ARRAY_LEN(DEFAULT_CUBE_INDICES_8), u32),
             }
         },
-        .debug = true,
+        .debug = false,
     };
 
     for(u8 i = 0; i < total_chunks; i++) 

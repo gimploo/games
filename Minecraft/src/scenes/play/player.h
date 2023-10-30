@@ -25,34 +25,35 @@ const char *SHADER_PLAYER_FS =
 
 void update_player_mesh(playscene_t *c, const vec3f_t pos, const vec3f_t theta)
 {
+    const f32 camera_offset = 0.2f;
+
     const matrix4f_t rot = glms_mat4_mul(
         matrix4f_rot(theta.y, (vec3f_t){0.f, 1.f, 0.f}), //y
         matrix4f_rot(theta.x, (vec3f_t){1.f, 0.f, 0.f}) //x
     ); 
 
-    slot_iterator(&c->player.gfx.vtx, iter) {
+    slot_clear(&c->player.gfx.vtx);
+    slot_iterator(&c->player.mesh, iter) {
         vec3f_t *vec = (vec3f_t *)iter;
-        *vec = vec3f_cast(glms_mat4_mulv(rot, (vec4f_t ) {
-                .x = vec->x * pos.x,
-                .y = vec->y * pos.y,
-                .z = vec->z * pos.z,
+        vec3f_t nvec = vec3f_cast(glms_mat4_mulv(rot, (vec4f_t ) {
+                .x = vec->x + pos.x,
+                .y = vec->y + pos.y,
+                .z = camera_offset + vec->z + pos.z,
                 .w = 1.0f
             }));
+        slot_append(&c->player.gfx.vtx, nvec);
 
-        glm_vec4_print(vec->raw, stdout);
+        //glm_vec4_print(vec->raw, stdout);
     }
 
 }
 
 void create_player_mesh(playscene_t *c)
 {
-    slot_t *vtx = &c->player.gfx.vtx;
+    slot_t *vtx = &c->player.mesh;
     slot_t *idx = &c->player.gfx.idx;
 
-    vec3f_t cv[8] = {0};
-    memcpy(cv, DEFAULT_CUBE_VERTICES_8, sizeof(cv));
-
-    slot_insert_multiple(vtx, cv);
+    slot_insert_multiple(vtx, DEFAULT_CUBE_VERTICES_8);
     slot_insert_multiple(idx, DEFAULT_CUBE_INDICES_8);
 
 }
